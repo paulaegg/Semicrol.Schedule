@@ -10,10 +10,26 @@ namespace Semicrol.Schedule
     public class Schedule
     {
         private Configuration configuration;
+        private Validator _validator;
+        private DateTime? _firstActiveDay;
 
         public Schedule(Configuration Configuration)
         {
-            this.configuration = Configuration ?? throw new NotImplementedException("You should define a configuration for the schedule"); ;
+            this.configuration = Configuration ?? throw new NotImplementedException("You should define a configuration for the schedule");
+        }
+
+        private DateTime LastOutputDate { get; set; }
+
+        private Validator validator
+        {
+            get
+            {
+                if (_validator == null)
+                {
+                    this._validator = new Validator(configuration);
+                }
+                return _validator;
+            }
         }
 
         #region Description Texts
@@ -21,7 +37,7 @@ namespace Semicrol.Schedule
         {
             get
             {
-                return this.configuration.ConfigurationType == ConfigurationTypes.Once ? "once" : "every day";
+                return this.configuration.Type == ConfigurationTypes.Once ? "once" : $"every {textDailyConfig} {textHours}";
             }
         }
 
@@ -40,6 +56,47 @@ namespace Semicrol.Schedule
                 Text += this.textEndLimit;
 
                 return Text;
+            }
+        }
+
+        private string textDailyConfig
+        {
+            get
+            {
+                if (configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
+
+                return $"{configuration.WeeklyPeriodicity} weeks on {textWeekDays}";
+            }
+        }
+
+        private string textWeekDays
+        {
+            get
+            {
+                if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
+                string text = configuration.WeeklyActiveDays.First().ToString();
+
+                for (int index = 1; index < configuration.WeeklyActiveDays.Length -2; index++)
+                {
+                    text += ", " + configuration.WeeklyActiveDays[index].ToString();
+                }
+
+                text += " and " + configuration.WeeklyActiveDays.Last().ToString();
+                return text;
+            }
+        }
+
+        private string textHours
+        {
+            get
+            {
+                if (configuration.DailyType == ConfigurationTypes.Once)
+                {
+                    return $" at {configuration.DailyOnceTime}";
+                }
+                return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
+                    $"{configuration.DailyStartTime} and {configuration.DailyEndTime} ";
+                
             }
         }
 
@@ -73,54 +130,153 @@ namespace Semicrol.Schedule
         }
         #endregion
 
-        public OutPut CalculateNextExecution()
+        private DateTime firstActiveDay
+        {
+            get
+            {
+                if (this._firstActiveDay == null)
+                {
+                    this._firstActiveDay = this.GetFirstActiveDay();
+                }
+                return this._firstActiveDay.Value;
+            }
+        }
+
+        public OutPut GetNextExecution()
         {
             if (this.configuration.Enabled == false)
             {
                 return new OutPut() { Description = "The process is disabled" };
             }
 
-            Validations.ValidateConfiguration(configuration);
-            DateTime NextDate = this.CalculateNextDate();
-           
+            validator.ValidateConfiguration();
+            LastOutputDate = this.GetNextDate();
+
             OutPut NextExecution = new OutPut()
             {
-                NextExecutionDate = NextDate,
-                Description = CalculateDescription(NextDate)
+                NextExecutionDate = LastOutputDate,
+                Description = GetDescription(LastOutputDate)
             };
 
             return NextExecution;
         }
 
-        public DateTime CalculateNextDate()
+        public DateTime GetNextDate()
         {
-            DateTime NextDate = this.configuration.ConfigurationType == ConfigurationTypes.Once
-                ? this.CalculateNextDateOnceType()
-                : this.CalculateNextDateRecurringType();
+            DateTime NextDate = this.configuration.Type == ConfigurationTypes.Once
+                ? this.GetNextDateOnceType()
+                : this.GetNextRecurringExecution();
 
-            Validations.ValidateCorrectDateWithCurrentDate(this.configuration, NextDate);
-            Validations.ValidateDateInLimits(this.configuration, NextDate);
-
+            validator.ValidateCorrectDateWithCurrentDate(NextDate);
+            validator.ValidateDateInLimits(NextDate);
+            
             return NextDate;
         }
 
-        private DateTime CalculateNextDateOnceType()
+        private DateTime GetNextDateOnceType()
         {
-            Validations.ValidateRequiredConfigurationDate(this.configuration);
-            return this.configuration.ConfigurationDate.Value;
+            validator.ValidateRequiredConfigurationDate();
+            return this.configuration.OnceExecutionTime.Value;
         }
 
-        private DateTime CalculateNextDateRecurringType()
+        #region Recurring Calculations
+
+        private DateTime GetNextRecurringExecution()
         {
-            Validations.ValidateRequiredConfigurationDays(this.configuration);
-            return this.configuration.CurrentDate + this.configuration.PeriodOccurs;
+            this.validator.ValidateWeeklyConfiguration();
+            DateTime NextDay = this.LastOutputDate.IsCorrectDate() == false ? firstActiveDay : LastOutputDate;
+
+            DateTime? NextDate = this.CalculateTime(NextDay);
+            if (NextDate.HasValue == false)
+            {
+                NextDay = this.GetNextDate(NextDay);
+                NextDate = this.CalculateTime(NextDay);
+            }
+            return NextDate.Value;
         }
 
-        public string CalculateDescription(DateTime NextDate)
+        private DateTime GetFirstActiveDay()
         {
-            string description = 
-                $@"Occurs {this.textoOcurrs}. Schedule will be used on {NextDate:dd/MM/yyyy} at {NextDate:HH:mm} {this.textLimits}";
-            return description.Trim();
+            DateTime FirstActiveDate = this.configuration.CurrentDate;
+            for (int days = 0; days < 7; days++)
+             {
+                if (this.configuration.WeeklyActiveDays.Contains(FirstActiveDate.DayOfWeek))
+                {
+                    break;
+                }
+                FirstActiveDate = FirstActiveDate.AddDays(1);
+            }
+            return FirstActiveDate;
         }
+
+        private DateTime? CalculateTime(DateTime Day)
+        {
+            return this.configuration.DailyType == ConfigurationTypes.Once
+                ? this.GetOnceTime(Day)
+                : this.GetRecurringTime(Day);
+        }
+
+        private DateTime? GetOnceTime(DateTime Day)
+        {
+            if (LastOutputDate == Day) { return null; }
+            return Day.FullDateTime(this.configuration.DailyOnceTime);
+        }
+
+        private DateTime? GetRecurringTime(DateTime Day)
+        {
+            validator.ValidateDailyFrecuency();
+
+            if (this.LastOutputDate.IsCorrectDate() == false)
+            {
+                return Day.FullDateTime(this.configuration.DailyStartTime);
+            }
+
+            TimeSpan Time = Day.TimeOfDay.Add(this.configuration.DailyPeriodicityTime);
+            Time = Time < this.configuration.DailyStartTime ? this.configuration.DailyStartTime : Time;
+
+            if (Time.TotalHours >= 24 ||
+                Time > this.configuration.DailyEndTime)
+            {
+                return null;
+            }
+
+            return Day.FullDateTime(Time);
+        }
+
+        private DateTime GetNextDate(DateTime LastDate)
+        {
+            DateTime[] weekActiveDays = this.GetWeekActiveDays(LastDate);
+
+            int IndexDay = Array.IndexOf(weekActiveDays, LastDate);
+            if (IndexDay < configuration.WeeklyActiveDays.Length-1)
+            {
+                return weekActiveDays[IndexDay + 1].FullDateTime(TimeSpan.Zero);
+            }
+                       
+            DateTime date = weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicityInDays);
+            return date.FullDateTime(TimeSpan.Zero);
+        }
+
+        private DateTime[] GetWeekActiveDays(DateTime day)
+        {
+            return day.FullWeek()
+                .Where(D => configuration.WeeklyActiveDays.Contains(D.DayOfWeek))
+                .ToArray();
+        }
+
+        #endregion
+
+        public string GetDescription(DateTime NextDate)
+        {
+            if (configuration.Type == ConfigurationTypes.Once)
+            {
+                return 
+               $@"Occurs {this.textoOcurrs}. Schedule will be used on {NextDate:dd/MM/yyyy} at {NextDate:HH:mm} {this.textLimits}".Trim();
+            }
+
+
+            return $@"Occurs {this.textoOcurrs} {this.textLimits}".Trim(); ;
+        }
+
     }
 }
