@@ -8,9 +8,19 @@ namespace Semicrol.Schedule
 {
     public static class SchedulExtensionMethods
     {
-        public static Boolean IsCorrectDate(this DateTime Date)
+        public static Boolean IsValid(this DateTime Date)
         {
             return Date != DateTime.MaxValue && Date != DateTime.MinValue;
+        }
+
+        public static Boolean IsValid(this int Number)
+        {
+            return int.TryParse(Number.ToString(), out int result);
+        }
+
+        public static Boolean IsValid(this TimeSpan Time)
+        {
+            return Time.TotalHours < 24 && Time.TotalHours >= 0;
         }
 
         public static DateTime[] FullWeek(this DateTime Date)

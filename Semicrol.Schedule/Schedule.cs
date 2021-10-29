@@ -9,7 +9,7 @@ namespace Semicrol.Schedule
 {
     public class Schedule
     {
-        private Configuration configuration;
+        private readonly Configuration configuration;
         private Validator _validator;
         private DateTime? _firstActiveDay;
 
@@ -18,7 +18,7 @@ namespace Semicrol.Schedule
             this.configuration = Configuration ?? throw new NotImplementedException("You should define a configuration for the schedule");
         }
 
-        private DateTime LastOutputDate { get; set; }
+        private DateTime lastOutputDate { get; set; }
 
         private Validator validator
         {
@@ -76,7 +76,7 @@ namespace Semicrol.Schedule
                 if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
                 string text = configuration.WeeklyActiveDays.First().ToString();
 
-                for (int index = 1; index < configuration.WeeklyActiveDays.Length -2; index++)
+                for (int index = 1; index < configuration.WeeklyActiveDays.Length -1; index++)
                 {
                     text += ", " + configuration.WeeklyActiveDays[index].ToString();
                 }
@@ -150,12 +150,12 @@ namespace Semicrol.Schedule
             }
 
             validator.ValidateConfiguration();
-            LastOutputDate = this.GetNextDate();
+            lastOutputDate = this.GetNextDate();
 
             OutPut NextExecution = new OutPut()
             {
-                NextExecutionDate = LastOutputDate,
-                Description = GetDescription(LastOutputDate)
+                NextExecutionDate = lastOutputDate,
+                Description = GetDescription(lastOutputDate)
             };
 
             return NextExecution;
@@ -184,7 +184,7 @@ namespace Semicrol.Schedule
         private DateTime GetNextRecurringExecution()
         {
             this.validator.ValidateWeeklyConfiguration();
-            DateTime NextDay = this.LastOutputDate.IsCorrectDate() == false ? firstActiveDay : LastOutputDate;
+            DateTime NextDay = this.lastOutputDate.IsValid() == false ? firstActiveDay : lastOutputDate;
 
             DateTime? NextDate = this.CalculateTime(NextDay);
             if (NextDate.HasValue == false)
@@ -197,9 +197,26 @@ namespace Semicrol.Schedule
 
         private DateTime GetFirstActiveDay()
         {
-            DateTime FirstActiveDate = this.configuration.CurrentDate;
+            return configuration.Periodcity == PeriodicityType.Daily
+                ? GetFirstActiveDayDaily()
+                : GetFirstActiveDayWeekly();
+        }
+
+        private DateTime GetFirstActiveDayDaily()
+        {
+            return this.configuration.StartDate.HasValue
+                 ? configuration.StartDate.Value
+                 : this.configuration.CurrentDate;
+        }
+
+        private DateTime GetFirstActiveDayWeekly()
+        {
+            DateTime FirstActiveDate = this.configuration.StartDate.HasValue 
+                ? configuration.StartDate.Value
+                : this.configuration.CurrentDate;
+
             for (int days = 0; days < 7; days++)
-             {
+            {
                 if (this.configuration.WeeklyActiveDays.Contains(FirstActiveDate.DayOfWeek))
                 {
                     break;
@@ -208,6 +225,8 @@ namespace Semicrol.Schedule
             }
             return FirstActiveDate;
         }
+
+
 
         private DateTime? CalculateTime(DateTime Day)
         {
@@ -218,7 +237,8 @@ namespace Semicrol.Schedule
 
         private DateTime? GetOnceTime(DateTime Day)
         {
-            if (LastOutputDate == Day) { return null; }
+            validator.ValidateDailyOnceFrecuency();
+            if (lastOutputDate == Day) { return null; }
             return Day.FullDateTime(this.configuration.DailyOnceTime);
         }
 
@@ -226,7 +246,7 @@ namespace Semicrol.Schedule
         {
             validator.ValidateDailyFrecuency();
 
-            if (this.LastOutputDate.IsCorrectDate() == false)
+            if (this.lastOutputDate.IsValid() == false || lastOutputDate.Date < Day.Date)
             {
                 return Day.FullDateTime(this.configuration.DailyStartTime);
             }
@@ -234,7 +254,7 @@ namespace Semicrol.Schedule
             TimeSpan Time = Day.TimeOfDay.Add(this.configuration.DailyPeriodicityTime);
             Time = Time < this.configuration.DailyStartTime ? this.configuration.DailyStartTime : Time;
 
-            if (Time.TotalHours >= 24 ||
+            if (Time.IsValid() == false ||
                 Time > this.configuration.DailyEndTime)
             {
                 return null;
@@ -245,16 +265,24 @@ namespace Semicrol.Schedule
 
         private DateTime GetNextDate(DateTime LastDate)
         {
+            DateTime date = configuration.Periodcity == PeriodicityType.Daily
+                ? LastDate.AddDays(1)
+                : GetNextDateWeekly(LastDate);
+
+            return date.FullDateTime(TimeSpan.Zero);
+        }
+
+        private DateTime GetNextDateWeekly(DateTime LastDate)
+        {
             DateTime[] weekActiveDays = this.GetWeekActiveDays(LastDate);
 
             int IndexDay = Array.IndexOf(weekActiveDays, LastDate);
-            if (IndexDay < configuration.WeeklyActiveDays.Length-1)
+            if (IndexDay < configuration.WeeklyActiveDays.Length - 1)
             {
                 return weekActiveDays[IndexDay + 1].FullDateTime(TimeSpan.Zero);
             }
-                       
-            DateTime date = weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicityInDays);
-            return date.FullDateTime(TimeSpan.Zero);
+
+            return weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicityInDays);            
         }
 
         private DateTime[] GetWeekActiveDays(DateTime day)

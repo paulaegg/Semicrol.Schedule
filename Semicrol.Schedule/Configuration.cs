@@ -55,7 +55,7 @@ namespace Semicrol.Schedule
             }
         }
         public TimeSpan DailyStartTime { get; set; }
-        public TimeSpan DailyEndTime { get; set; }
+        public TimeSpan DailyEndTime { get; set; } = new TimeSpan(23, 59, 58);
         #endregion
     }
 }
