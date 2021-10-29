@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Semicrol.Schedule.Enumerations;
 
 namespace Semicrol.Schedule
 {
     public class Configuration
     {
-        public Configuration()
-        { }
-
         public DateTime CurrentDate { get; set; }
         public ConfigurationTypes Type { get; set; }
         public bool Enabled { get; set; }

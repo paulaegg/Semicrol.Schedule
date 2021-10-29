@@ -1,9 +1,5 @@
 ﻿using FluentAssertions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using static Semicrol.Schedule.Enumerations;
 
@@ -182,7 +178,7 @@ namespace Semicrol.Schedule.Test
             {
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 1,
-                DailyStartTime = new TimeSpan(65,0,0)
+                DailyStartTime = new TimeSpan(65, 0, 0)
             };
             Validator validator = new(Configuration);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
@@ -409,7 +405,7 @@ namespace Semicrol.Schedule.Test
             Action GetNextExecution = () => Schedule.GetNextExecution();
             GetNextExecution.Should().Throw<Exception>().WithMessage("If type is Once, you should enter a valid DateTime");
         }
-      
+
         [Fact]
         public void Calculate_Next_Execution_Once_Type_Correct()
         {
@@ -425,7 +421,7 @@ namespace Semicrol.Schedule.Test
             Schedule Schedule = new(Configuration);
             OutPut output = Schedule.GetNextExecution();
             output.NextExecutionDate.Should().Be(new DateTime(2020, 1, 3));
-           // output.Description.Should().Be("");
+            output.Description.Should().Be("Occurs once. Schedule will be used on 03/01/2020 at 00:00 starting on 02/01/2020 and ending on 10/01/2020");
         }
         #endregion
 
@@ -436,7 +432,7 @@ namespace Semicrol.Schedule.Test
             Configuration Configuration = new()
             {
                 Enabled = true,
-                CurrentDate = new DateTime(2020,1,1),
+                CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
                 Periodcity = PeriodicityType.Daily,
                 DailyType = ConfigurationTypes.Once,
@@ -467,7 +463,7 @@ namespace Semicrol.Schedule.Test
             result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 2, 2, 0, 0));
             result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 2, 0, 0));
 
-            //result[0].Description.Should().Be(@"");
+            result[0].Description.Should().Be(@"Occurs every day at 02:00:00");
         }
 
         [Fact]
@@ -549,7 +545,7 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 0, 0, 0));
             result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 12, 0, 0));
 
-            //result[0].Description.Should().Be(@"");
+            result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:58");
         }
 
         #endregion
@@ -565,7 +561,7 @@ namespace Semicrol.Schedule.Test
                 Type = ConfigurationTypes.Recurring,
                 Periodcity = PeriodicityType.Weekly,
                 WeeklyPeriodicity = -1
-                
+
             };
             Schedule Schedule = new(Configuration);
             Action GetNextExecution = () => Schedule.GetNextExecution();
@@ -609,7 +605,7 @@ namespace Semicrol.Schedule.Test
             result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 0, 0, 0));
             result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 9, 0, 0, 0));
 
-            //result[0].Description.Should().Be(@"");
+            result[0].Description.Should().Be(@"Occurs every 1 week on Monday and Thursday at 00:00:00");
         }
 
         [Fact]
@@ -638,7 +634,7 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 10, 0, 0, 0));
             result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 10, 12, 0, 0));
 
-            //result[0].Description.Should().Be(@"");
+            result[0].Description.Should().Be(@"Occurs every 1 week on Monday and Friday every 12 Hours between 00:00:00 and 23:59:58");
         }
 
         [Fact]
@@ -671,7 +667,7 @@ namespace Semicrol.Schedule.Test
             result[8].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 0, 0, 0));
             result[9].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 12, 0, 0));
 
-            //result[0].Description.Should().Be(@"");
+            result[0].Description.Should().Be(@"Occurs every 2 weeks on Tuesday, Friday and Sunday every 12 Hours between 00:00:00 and 23:59:58");
         }
 
         [Fact]
@@ -690,7 +686,8 @@ namespace Semicrol.Schedule.Test
                 DailyPeriodicityType = TimePeriodicityType.Hours,
                 DailyStartTime = new TimeSpan(4, 0, 0),
                 DailyEndTime = new TimeSpan(8, 0, 0),
-                StartDate = new DateTime(2020, 1, 2)
+                StartDate = new DateTime(2020, 1, 2),
+                EndDate = new DateTime(2020, 1, 31)
             };
             Schedule Schedule = new(Configuration);
             var result = Schedule.CalculateSerie(10);
@@ -706,7 +703,7 @@ namespace Semicrol.Schedule.Test
             result[7].NextExecutionDate.Should().Be(new DateTime(2020, 1, 18, 6, 0, 0));
             result[8].NextExecutionDate.Should().Be(new DateTime(2020, 1, 18, 8, 0, 0));
             result[9].NextExecutionDate.Should().Be(new DateTime(2020, 1, 27, 4, 0, 0));
-            //result[9].Description.Should().Be(@"Occurs every 2 months on the fourth weekend in 2-hour periods between 2:00:00 and 4:00:00");
+            result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Saturday every 2 Hours between 04:00:00 and 08:00:00 starting on 02/01/2020 and ending on 31/01/2020");
         }
 
         [Fact]
@@ -738,6 +735,7 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 32, 0));
             result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 34, 0));
             result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 20, 4, 30, 0));
+            result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
         }
 
         [Fact]
@@ -769,6 +767,8 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 4, 30, 12));
             result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 4, 30, 14));
             result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 4, 30, 10));
+
+            result[0].Description.Should().Be(@"Occurs every 2 weeks on Monday and Sunday every 2 Seconds between 04:30:10 and 04:30:15 starting on 02/01/2020");
         }
 
         #endregion

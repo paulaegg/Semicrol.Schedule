@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Semicrol.Schedule
 {
@@ -95,7 +92,7 @@ namespace Semicrol.Schedule
             }
             return WeekDays.ToArray();
         }
-        
+
         public static DateTime FullDateTime(this DateTime Day, TimeSpan Time)
         {
             return new DateTime(Day.Year, Day.Month, Day.Day, Time.Hours, Time.Minutes, Time.Seconds);

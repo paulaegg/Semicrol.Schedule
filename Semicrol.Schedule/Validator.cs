@@ -23,7 +23,7 @@ namespace Semicrol.Schedule
             if (configuration.CurrentDate.IsValid() == false)
             {
                 throw new Exception("Current date should be a correct date");
-            }          
+            }
             if (configuration.StartDate.HasValue && configuration.StartDate.Value.IsValid() == false)
             {
                 throw new Exception("Start Date should be a correct date");
@@ -46,7 +46,7 @@ namespace Semicrol.Schedule
         public void ValidateRequiredConfigurationDate()
         {
             if (configuration.Type == ConfigurationTypes.Once &&
-                (configuration.OnceExecutionTime.HasValue == false || 
+                (configuration.OnceExecutionTime.HasValue == false ||
                 configuration.OnceExecutionTime.Value.IsValid() == false))
             {
                 throw new Exception("If type is Once, you should enter a valid DateTime");
@@ -70,7 +70,8 @@ namespace Semicrol.Schedule
         public void ValidateDailyFrecuency()
         {
             if (configuration.DailyType != ConfigurationTypes.Recurring) { return; }
-            if(configuration.DailyPeriodicity == 0 || configuration.DailyPeriodicity.IsValid() == false)
+
+            if (configuration.DailyPeriodicity == 0 || configuration.DailyPeriodicity.IsValid() == false)
             {
                 throw new Exception("You should indicate a correct periodicity");
             }

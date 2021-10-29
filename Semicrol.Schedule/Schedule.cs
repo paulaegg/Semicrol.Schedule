@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Semicrol.Schedule.Enumerations;
 
 namespace Semicrol.Schedule
@@ -32,12 +29,24 @@ namespace Semicrol.Schedule
             }
         }
 
+        private DateTime firstActiveDay
+        {
+            get
+            {
+                if (this._firstActiveDay == null)
+                {
+                    this._firstActiveDay = this.GetFirstActiveDay();
+                }
+                return this._firstActiveDay.Value;
+            }
+        }
+
         #region Description Texts
         private string textoOcurrs
         {
             get
             {
-                return this.configuration.Type == ConfigurationTypes.Once ? "once" : $"every {textDailyConfig} {textHours}";
+                return this.configuration.Type == ConfigurationTypes.Once ? "once" : $"every {textDailyConfig}{textHours}";
             }
         }
 
@@ -64,8 +73,8 @@ namespace Semicrol.Schedule
             get
             {
                 if (configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
-
-                return $"{configuration.WeeklyPeriodicity} weeks on {textWeekDays}";
+                string weekText = configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
+                return $"{configuration.WeeklyPeriodicity} {weekText} on {textWeekDays}";
             }
         }
 
@@ -76,7 +85,7 @@ namespace Semicrol.Schedule
                 if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
                 string text = configuration.WeeklyActiveDays.First().ToString();
 
-                for (int index = 1; index < configuration.WeeklyActiveDays.Length -1; index++)
+                for (int index = 1; index < configuration.WeeklyActiveDays.Length - 1; index++)
                 {
                     text += ", " + configuration.WeeklyActiveDays[index].ToString();
                 }
@@ -95,8 +104,8 @@ namespace Semicrol.Schedule
                     return $" at {configuration.DailyOnceTime}";
                 }
                 return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
-                    $"{configuration.DailyStartTime} and {configuration.DailyEndTime} ";
-                
+                    $"{configuration.DailyStartTime} and {configuration.DailyEndTime}";
+
             }
         }
 
@@ -130,18 +139,6 @@ namespace Semicrol.Schedule
         }
         #endregion
 
-        private DateTime firstActiveDay
-        {
-            get
-            {
-                if (this._firstActiveDay == null)
-                {
-                    this._firstActiveDay = this.GetFirstActiveDay();
-                }
-                return this._firstActiveDay.Value;
-            }
-        }
-
         public OutPut GetNextExecution()
         {
             if (this.configuration.Enabled == false)
@@ -169,7 +166,7 @@ namespace Semicrol.Schedule
 
             validator.ValidateCorrectDateWithCurrentDate(NextDate);
             validator.ValidateDateInLimits(NextDate);
-            
+
             return NextDate;
         }
 
@@ -178,8 +175,6 @@ namespace Semicrol.Schedule
             validator.ValidateRequiredConfigurationDate();
             return this.configuration.OnceExecutionTime.Value;
         }
-
-        #region Recurring Calculations
 
         private DateTime GetNextRecurringExecution()
         {
@@ -211,7 +206,7 @@ namespace Semicrol.Schedule
 
         private DateTime GetFirstActiveDayWeekly()
         {
-            DateTime FirstActiveDate = this.configuration.StartDate.HasValue 
+            DateTime FirstActiveDate = this.configuration.StartDate.HasValue
                 ? configuration.StartDate.Value
                 : this.configuration.CurrentDate;
 
@@ -225,8 +220,6 @@ namespace Semicrol.Schedule
             }
             return FirstActiveDate;
         }
-
-
 
         private DateTime? CalculateTime(DateTime Day)
         {
@@ -282,7 +275,7 @@ namespace Semicrol.Schedule
                 return weekActiveDays[IndexDay + 1].FullDateTime(TimeSpan.Zero);
             }
 
-            return weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicityInDays);            
+            return weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicityInDays);
         }
 
         private DateTime[] GetWeekActiveDays(DateTime day)
@@ -292,19 +285,15 @@ namespace Semicrol.Schedule
                 .ToArray();
         }
 
-        #endregion
-
         public string GetDescription(DateTime NextDate)
         {
             if (configuration.Type == ConfigurationTypes.Once)
             {
-                return 
+                return
                $@"Occurs {this.textoOcurrs}. Schedule will be used on {NextDate:dd/MM/yyyy} at {NextDate:HH:mm} {this.textLimits}".Trim();
             }
 
-
             return $@"Occurs {this.textoOcurrs} {this.textLimits}".Trim(); ;
         }
-
     }
 }
