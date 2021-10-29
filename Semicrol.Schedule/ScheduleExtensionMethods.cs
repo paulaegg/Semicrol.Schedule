@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Semicrol.Schedule
 {
-    public static class SchedulExtensionMethods
+    public static class ScheduleExtensionMethods
     {
         public static Boolean IsValid(this DateTime Date)
         {
