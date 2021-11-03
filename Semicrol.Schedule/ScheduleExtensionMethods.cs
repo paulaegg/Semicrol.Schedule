@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Semicrol.Schedule
 {
@@ -20,7 +21,7 @@ namespace Semicrol.Schedule
             return Time.TotalHours < 24 && Time.TotalHours >= 0;
         }
 
-        public static DateTime[] FullWeek(this DateTime Date)
+        public static DateTime[] ActiveWeekDays(this DateTime Date, DayOfWeek[] WeeklyActiveDays)
         {
             List<DateTime> WeekDays = new List<DateTime>();
 
@@ -90,7 +91,7 @@ namespace Semicrol.Schedule
                     WeekDays.Add(Date);
                     break;
             }
-            return WeekDays.ToArray();
+            return WeekDays.Where(D => WeeklyActiveDays.Contains(D.DayOfWeek)).ToArray();
         }
 
         public static DateTime FullDateTime(this DateTime Day, TimeSpan Time)

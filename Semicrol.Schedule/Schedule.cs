@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using static Semicrol.Schedule.Enumerations;
 
@@ -8,11 +9,10 @@ namespace Semicrol.Schedule
     {
         private readonly Configuration configuration;
         private Validator _validator;
-        private DateTime? _firstActiveDay;
 
-        public Schedule(Configuration Configuration)
+        public Schedule(Configuration configuration)
         {
-            this.configuration = Configuration ?? throw new NotImplementedException("You should define a configuration for the schedule");
+            this.configuration = configuration ?? throw new NotImplementedException("You should define a configuration for the schedule");
         }
 
         private DateTime lastOutputDate { get; set; }
@@ -28,115 +28,79 @@ namespace Semicrol.Schedule
                 return _validator;
             }
         }
-
-        private DateTime firstActiveDay
-        {
-            get
-            {
-                if (this._firstActiveDay == null)
-                {
-                    this._firstActiveDay = this.GetFirstActiveDay();
-                }
-                return this._firstActiveDay.Value;
-            }
-        }
-
+      
         #region Description Texts
-        private string textoOcurrs
+        private string GetTextOcurrs()
         {
-            get
-            {
-                return this.configuration.Type == ConfigurationTypes.Once ? "once" : $"every {textDailyConfig}{textHours}";
-            }
+            return this.configuration.Type == ConfigurationTypes.Once ? "once" : $"every {GetTextDailyConfig()}{GetTextHours()}";
         }
 
-        private string textLimits
+        private string GetTextLimits()
         {
-            get
+            if (this.configuration.StartDate.HasValue == false &&
+                this.configuration.EndDate.HasValue == false)
             {
-                if (this.configuration.StartDate.HasValue == false &&
-                    this.configuration.EndDate.HasValue == false)
-                {
-                    return string.Empty;
-                }
-
-                string Text = this.textStarLimit;
-                Text += this.hasBothLimits ? " and " : string.Empty;
-                Text += this.textEndLimit;
-
-                return Text;
+                return string.Empty;
             }
+
+            string Text = this.GetTextStarLimit();
+            Text += this.CheckHasBothLimits() ? " and " : string.Empty;
+            Text += this.GetTextEndLimit();
+
+            return Text;
         }
 
-        private string textDailyConfig
+        private string GetTextDailyConfig()
         {
-            get
-            {
-                if (configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
-                string weekText = configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
-                return $"{configuration.WeeklyPeriodicity} {weekText} on {textWeekDays}";
-            }
+            if (configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
+            string weekText = configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
+            return $"{configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays()}";
         }
 
-        private string textWeekDays
+        private string GetTextWeekDays()
         {
-            get
+            if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
+            string text = configuration.WeeklyActiveDays.First().ToString();
+
+            for (int index = 1; index < configuration.WeeklyActiveDays.Length - 1; index++)
             {
-                if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
-                string text = configuration.WeeklyActiveDays.First().ToString();
-
-                for (int index = 1; index < configuration.WeeklyActiveDays.Length - 1; index++)
-                {
-                    text += ", " + configuration.WeeklyActiveDays[index].ToString();
-                }
-
-                text += " and " + configuration.WeeklyActiveDays.Last().ToString();
-                return text;
+                text += ", " + configuration.WeeklyActiveDays[index].ToString();
             }
+
+            text += " and " + configuration.WeeklyActiveDays.Last().ToString();
+            return text;
         }
 
-        private string textHours
+        private string GetTextHours()
         {
-            get
+            if (configuration.DailyType == ConfigurationTypes.Once)
             {
-                if (configuration.DailyType == ConfigurationTypes.Once)
-                {
-                    return $" at {configuration.DailyOnceTime}";
-                }
-                return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
-                    $"{configuration.DailyStartTime} and {configuration.DailyEndTime}";
-
+                return $" at {configuration.DailyOnceTime}";
             }
+            return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
+                $"{configuration.DailyStartTime} and {configuration.DailyEndTime}";
         }
 
-        private bool hasBothLimits
+        private bool CheckHasBothLimits()
         {
-            get
-            {
-                return string.IsNullOrEmpty(this.textStarLimit) == false &&
-                       string.IsNullOrEmpty(this.textEndLimit) == false;
-            }
+            return string.IsNullOrEmpty(this.GetTextStarLimit()) == false &&
+                   string.IsNullOrEmpty(this.GetTextEndLimit()) == false;
         }
 
-        private string textStarLimit
+        private string GetTextStarLimit()
         {
-            get
-            {
-                return this.configuration.StartDate.HasValue
-                    ? $"starting on {this.configuration.StartDate.Value:dd/MM/yyyy}"
-                    : string.Empty;
-            }
+            return this.configuration.StartDate.HasValue
+                ? $"starting on {this.configuration.StartDate.Value:dd/MM/yyyy}"
+                : string.Empty;
         }
 
-        private string textEndLimit
+        private string GetTextEndLimit()
         {
-            get
-            {
-                return this.configuration.EndDate.HasValue
-                    ? $"ending on { this.configuration.EndDate.Value:dd/MM/yyyy}"
-                    : string.Empty;
-            }
+            return this.configuration.EndDate.HasValue
+                ? $"ending on { this.configuration.EndDate.Value:dd/MM/yyyy}"
+                : string.Empty;
         }
+
         #endregion
 
         public OutPut GetNextExecution()
@@ -179,7 +143,7 @@ namespace Semicrol.Schedule
         private DateTime GetNextRecurringExecution()
         {
             this.validator.ValidateWeeklyConfiguration();
-            DateTime NextDay = this.lastOutputDate.IsValid() == false ? firstActiveDay : lastOutputDate;
+            DateTime NextDay = this.lastOutputDate.IsValid() == false ? GetFirstActiveDay() : lastOutputDate;
 
             DateTime? NextDate = this.CalculateTime(NextDay);
             if (NextDate.HasValue == false)
@@ -244,7 +208,7 @@ namespace Semicrol.Schedule
                 return Day.FullDateTime(this.configuration.DailyStartTime);
             }
 
-            TimeSpan Time = Day.TimeOfDay.Add(this.configuration.DailyPeriodicityTime);
+            TimeSpan Time = Day.TimeOfDay.Add(this.GetDailyPeriodicityTime());
             Time = Time < this.configuration.DailyStartTime ? this.configuration.DailyStartTime : Time;
 
             if (Time.IsValid() == false ||
@@ -254,6 +218,21 @@ namespace Semicrol.Schedule
             }
 
             return Day.FullDateTime(Time);
+        }
+
+        public TimeSpan GetDailyPeriodicityTime()
+        {
+            switch (configuration.DailyPeriodicityType)
+            {
+                case TimePeriodicityType.Hours:
+                    return new TimeSpan(configuration.DailyPeriodicity, 0, 0);
+                case TimePeriodicityType.Minutes:
+                    return new TimeSpan(0, configuration.DailyPeriodicity, 0);
+                case TimePeriodicityType.Seconds:
+                    return new TimeSpan(0, 0, configuration.DailyPeriodicity);
+                default:
+                    return new TimeSpan(0, 0, 0);
+            }
         }
 
         private DateTime GetNextDate(DateTime LastDate)
@@ -267,7 +246,7 @@ namespace Semicrol.Schedule
 
         private DateTime GetNextDateWeekly(DateTime LastDate)
         {
-            DateTime[] weekActiveDays = this.GetWeekActiveDays(LastDate);
+            DateTime[] weekActiveDays = LastDate.ActiveWeekDays(configuration.WeeklyActiveDays);
 
             int IndexDay = Array.IndexOf(weekActiveDays, LastDate);
             if (IndexDay < configuration.WeeklyActiveDays.Length - 1)
@@ -275,25 +254,18 @@ namespace Semicrol.Schedule
                 return weekActiveDays[IndexDay + 1].FullDateTime(TimeSpan.Zero);
             }
 
-            return weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicityInDays);
+            return weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicity * 7);
         }
-
-        private DateTime[] GetWeekActiveDays(DateTime day)
-        {
-            return day.FullWeek()
-                .Where(D => configuration.WeeklyActiveDays.Contains(D.DayOfWeek))
-                .ToArray();
-        }
-
+            
         public string GetDescription(DateTime NextDate)
         {
             if (configuration.Type == ConfigurationTypes.Once)
             {
                 return
-               $@"Occurs {this.textoOcurrs}. Schedule will be used on {NextDate:dd/MM/yyyy} at {NextDate:HH:mm} {this.textLimits}".Trim();
+               $@"Occurs {this.GetTextOcurrs()}. Schedule will be used on {NextDate:dd/MM/yyyy} at {NextDate:HH:mm} {this.GetTextLimits()}".Trim();
             }
 
-            return $@"Occurs {this.textoOcurrs} {this.textLimits}".Trim(); ;
+            return $@"Occurs {this.GetTextOcurrs()} {this.GetTextLimits()}".Trim(); ;
         }
     }
 }
