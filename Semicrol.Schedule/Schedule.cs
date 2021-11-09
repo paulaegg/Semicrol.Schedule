@@ -234,11 +234,11 @@ namespace Semicrol.Schedule
             }
         }
 
-        private DateTime GetNextDate(DateTime LastDate)
+        private DateTime GetNextDate(DateTime lastDate)
         {
             DateTime date = _configuration.Periodcity == PeriodicityType.Daily
-                ? LastDate.AddDays(1)
-                : GetNextDateWeekly(LastDate);
+                ? lastDate.AddDays(1)
+                : GetNextDateWeekly(lastDate);
 
             return date.FullDateTime(TimeSpan.Zero);
         }
@@ -256,11 +256,11 @@ namespace Semicrol.Schedule
             return weekActiveDays[0].Date.AddDays(_configuration.WeeklyPeriodicity * 7);
         }
 
-        public string GetDescription(DateTime NextDate)
+        public string GetDescription(DateTime nextDate)
         {
             if (_configuration.Type == ConfigurationTypes.Once)
             {
-                return $@"Occurs {GetTextOcurrs()}. Schedule will be used on {NextDate.ToShortDateString()} at {NextDate.ToShortTimeString()} {GetTextLimits()}".Trim();
+                return $@"Occurs {GetTextOcurrs()}. Schedule will be used on {nextDate.ToShortDateString()} at {nextDate.ToShortTimeString()} {GetTextLimits()}".Trim();
             }
 
             return $@"Occurs {GetTextOcurrs()} {GetTextLimits()}".Trim(); ;
