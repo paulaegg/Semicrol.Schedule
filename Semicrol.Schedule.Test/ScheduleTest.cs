@@ -301,7 +301,7 @@ namespace Semicrol.Schedule.Test
 
         [Fact]
         public void Disabled_Configuration()
-        {
+        { 
             Configuration configuration = new()
             {
                 Enabled = false,
