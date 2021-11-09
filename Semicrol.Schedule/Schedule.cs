@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using static Semicrol.Schedule.Enumerations;
 
 namespace Semicrol.Schedule
 {
     public class Schedule
     {
-        private readonly Configuration configuration;
+        private readonly Configuration _configuration;
         private Validator _validator;
 
         public Schedule(Configuration configuration)
         {
-            this.configuration = configuration ?? throw new NotImplementedException("You should define a configuration for the schedule");
+            if (configuration == null)
+            {
+                throw new Exception("You should define a configuration for the schedule");
+            }
+            _configuration = configuration;
         }
 
         private DateTime lastOutputDate { get; set; }
@@ -23,81 +28,79 @@ namespace Semicrol.Schedule
             {
                 if (_validator == null)
                 {
-                    this._validator = new Validator(configuration);
+                    _validator = new Validator(_configuration);
                 }
                 return _validator;
             }
         }
-      
+
         #region Description Texts
         private string GetTextOcurrs()
         {
-            return this.configuration.Type == ConfigurationTypes.Once ? "once" : $"every {GetTextDailyConfig()}{GetTextHours()}";
+            return _configuration.Type == ConfigurationTypes.Once ? "once" : $"every {GetTextDailyConfig()}{GetTextHours()}";
         }
 
         private string GetTextLimits()
         {
-            if (this.configuration.StartDate.HasValue == false &&
-                this.configuration.EndDate.HasValue == false)
+            if (!_configuration.StartDate.HasValue &&
+                !_configuration.EndDate.HasValue)
             {
                 return string.Empty;
             }
+            StringBuilder text = new StringBuilder(GetTextStarLimit());
+            text.Append(CheckHasBothLimits() ? " and " : string.Empty);
+            text.Append(GetTextEndLimit());
 
-            string Text = this.GetTextStarLimit();
-            Text += this.CheckHasBothLimits() ? " and " : string.Empty;
-            Text += this.GetTextEndLimit();
-
-            return Text;
+            return text.ToString();
         }
 
         private string GetTextDailyConfig()
         {
-            if (configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
-            string weekText = configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
-            return $"{configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays()}";
+            if (_configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
+            string weekText = _configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
+            return $"{_configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays()}";
         }
 
         private string GetTextWeekDays()
         {
-            if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
-            string text = configuration.WeeklyActiveDays.First().ToString();
-
-            for (int index = 1; index < configuration.WeeklyActiveDays.Length - 1; index++)
+            if (_configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
+            
+            StringBuilder text = new StringBuilder(_configuration.WeeklyActiveDays.First().ToString());           
+            for (int index = 1; index < _configuration.WeeklyActiveDays.Length - 1; index++)
             {
-                text += ", " + configuration.WeeklyActiveDays[index].ToString();
+                text.Append(", " + _configuration.WeeklyActiveDays[index].ToString());
             }
-
-            text += " and " + configuration.WeeklyActiveDays.Last().ToString();
-            return text;
+            text.Append(" and " + _configuration.WeeklyActiveDays.Last().ToString());
+            return text.ToString();
         }
 
         private string GetTextHours()
         {
-            if (configuration.DailyType == ConfigurationTypes.Once)
+            if (_configuration.DailyType == ConfigurationTypes.Once)
             {
-                return $" at {configuration.DailyOnceTime}";
+                return $" at {_configuration.DailyOnceTime}";
             }
-            return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
-                $"{configuration.DailyStartTime} and {configuration.DailyEndTime}";
+            return $" every {_configuration.DailyPeriodicity} {_configuration.DailyPeriodicityType} between " +
+                $"{_configuration.DailyStartTime} and {_configuration.DailyEndTime}";
         }
 
         private bool CheckHasBothLimits()
         {
-            return string.IsNullOrEmpty(this.GetTextStarLimit()) == false &&
-                   string.IsNullOrEmpty(this.GetTextEndLimit()) == false;
+            return !string.IsNullOrEmpty(GetTextStarLimit()) &&
+                   !string.IsNullOrEmpty(GetTextEndLimit());
         }
 
         private string GetTextStarLimit()
         {
-            return this.configuration.StartDate.HasValue
-                ? $"starting on {this.configuration.StartDate.Value:dd/MM/yyyy}"
+            return _configuration.StartDate.HasValue
+                ? $"starting on {_configuration.StartDate.Value.ToShortDateString()}"
                 : string.Empty;
         }
 
         private string GetTextEndLimit()
         {
-            return this.configuration.EndDate.HasValue
-                ? $"ending on { this.configuration.EndDate.Value:dd/MM/yyyy}"
+            return _configuration.EndDate.HasValue
+                ? $"ending on { _configuration.EndDate.Value.ToShortDateString()}"
                 : string.Empty;
         }
 
@@ -105,131 +108,127 @@ namespace Semicrol.Schedule
 
         public OutPut GetNextExecution()
         {
-            if (this.configuration.Enabled == false)
+            if (!_configuration.Enabled)
             {
                 return new OutPut() { Description = "The process is disabled" };
             }
 
             validator.ValidateConfiguration();
-            lastOutputDate = this.GetNextDate();
+            lastOutputDate = GetNextDate();
 
-            OutPut NextExecution = new OutPut()
+            OutPut nextExecution = new OutPut()
             {
                 NextExecutionDate = lastOutputDate,
                 Description = GetDescription(lastOutputDate)
             };
 
-            return NextExecution;
+            return nextExecution;
         }
 
         public DateTime GetNextDate()
         {
-            DateTime NextDate = this.configuration.Type == ConfigurationTypes.Once
-                ? this.GetNextDateOnceType()
-                : this.GetNextRecurringExecution();
+            DateTime nextDate = _configuration.Type == ConfigurationTypes.Once
+                ? GetNextDateOnceType()
+                : GetNextRecurringExecution();
 
-            validator.ValidateCorrectDateWithCurrentDate(NextDate);
-            validator.ValidateDateInLimits(NextDate);
+            validator.ValidateCorrectDateWithCurrentDate(nextDate);
+            validator.ValidateDateInLimits(nextDate);
 
-            return NextDate;
+            return nextDate;
         }
 
         private DateTime GetNextDateOnceType()
         {
             validator.ValidateRequiredConfigurationDate();
-            return this.configuration.OnceExecutionTime.Value;
+            return _configuration.OnceExecutionTime.Value;
         }
 
         private DateTime GetNextRecurringExecution()
         {
-            this.validator.ValidateWeeklyConfiguration();
-            DateTime NextDay = this.lastOutputDate.IsValid() == false ? GetFirstActiveDay() : lastOutputDate;
+            validator.ValidateWeeklyConfiguration();
+            DateTime NextDay = lastOutputDate.IsValid() ? lastOutputDate : GetFirstActiveDay();
 
-            DateTime? NextDate = this.CalculateTime(NextDay);
-            if (NextDate.HasValue == false)
+            DateTime? nextDate = CalculateTime(NextDay);
+            if (!nextDate.HasValue)
             {
-                NextDay = this.GetNextDate(NextDay);
-                NextDate = this.CalculateTime(NextDay);
+                NextDay = GetNextDate(NextDay);
+                nextDate = CalculateTime(NextDay);
             }
-            return NextDate.Value;
+            return nextDate.Value;
         }
 
         private DateTime GetFirstActiveDay()
         {
-            return configuration.Periodcity == PeriodicityType.Daily
+            return _configuration.Periodcity == PeriodicityType.Daily
                 ? GetFirstActiveDayDaily()
                 : GetFirstActiveDayWeekly();
         }
 
         private DateTime GetFirstActiveDayDaily()
         {
-            return this.configuration.StartDate.HasValue
-                 ? configuration.StartDate.Value
-                 : this.configuration.CurrentDate;
+            return _configuration.StartDate ?? _configuration.CurrentDate;
         }
 
         private DateTime GetFirstActiveDayWeekly()
         {
-            DateTime FirstActiveDate = this.configuration.StartDate.HasValue
-                ? configuration.StartDate.Value
-                : this.configuration.CurrentDate;
+            DateTime firstActiveDate = _configuration.StartDate ?? _configuration.CurrentDate;
 
             for (int days = 0; days < 7; days++)
             {
-                if (this.configuration.WeeklyActiveDays.Contains(FirstActiveDate.DayOfWeek))
+                if (_configuration.WeeklyActiveDays.Contains(firstActiveDate.DayOfWeek))
                 {
                     break;
                 }
-                FirstActiveDate = FirstActiveDate.AddDays(1);
+                firstActiveDate = firstActiveDate.AddDays(1);
             }
-            return FirstActiveDate;
+            return firstActiveDate;
         }
 
-        private DateTime? CalculateTime(DateTime Day)
+        private DateTime? CalculateTime(DateTime day)
         {
-            return this.configuration.DailyType == ConfigurationTypes.Once
-                ? this.GetOnceTime(Day)
-                : this.GetRecurringTime(Day);
+            return _configuration.DailyType == ConfigurationTypes.Once
+                ? GetOnceTime(day)
+                : GetRecurringTime(day);
         }
 
-        private DateTime? GetOnceTime(DateTime Day)
+        private DateTime? GetOnceTime(DateTime day)
         {
             validator.ValidateDailyOnceFrecuency();
-            if (lastOutputDate == Day) { return null; }
-            return Day.FullDateTime(this.configuration.DailyOnceTime);
+            if (lastOutputDate == day) { return null; }
+
+            return day.FullDateTime(_configuration.DailyOnceTime);
         }
 
-        private DateTime? GetRecurringTime(DateTime Day)
+        private DateTime? GetRecurringTime(DateTime day)
         {
             validator.ValidateDailyFrecuency();
 
-            if (this.lastOutputDate.IsValid() == false || lastOutputDate.Date < Day.Date)
+            if (!lastOutputDate.IsValid() || lastOutputDate.Date < day.Date)
             {
-                return Day.FullDateTime(this.configuration.DailyStartTime);
+                return day.FullDateTime(_configuration.DailyStartTime);
             }
 
-            TimeSpan Time = Day.TimeOfDay.Add(this.GetDailyPeriodicityTime());
-            Time = Time < this.configuration.DailyStartTime ? this.configuration.DailyStartTime : Time;
+            TimeSpan time = day.TimeOfDay.Add(GetDailyPeriodicityTime());
+            time = time < _configuration.DailyStartTime ? _configuration.DailyStartTime : time;
 
-            if (Time.IsValid() == false ||
-                Time > this.configuration.DailyEndTime)
+            if (!time.IsValid() || time > _configuration.DailyEndTime)
             {
                 return null;
             }
 
-            return Day.FullDateTime(Time);
+            return day.FullDateTime(time);
         }
 
         public TimeSpan GetDailyPeriodicityTime()
         {
-            switch (configuration.DailyPeriodicityType)
+            switch (_configuration.DailyPeriodicityType)
             {
                 case TimePeriodicityType.Hours:
-                    return new TimeSpan(configuration.DailyPeriodicity, 0, 0);
+                    return new TimeSpan(_configuration.DailyPeriodicity, 0, 0);
                 case TimePeriodicityType.Minutes:
-                    return new TimeSpan(0, configuration.DailyPeriodicity, 0);
+                    return new TimeSpan(0, _configuration.DailyPeriodicity, 0);
                 case TimePeriodicityType.Seconds:
-                    return new TimeSpan(0, 0, configuration.DailyPeriodicity);
+                    return new TimeSpan(0, 0, _configuration.DailyPeriodicity);
                 default:
                     return new TimeSpan(0, 0, 0);
             }
@@ -237,35 +236,34 @@ namespace Semicrol.Schedule
 
         private DateTime GetNextDate(DateTime LastDate)
         {
-            DateTime date = configuration.Periodcity == PeriodicityType.Daily
+            DateTime date = _configuration.Periodcity == PeriodicityType.Daily
                 ? LastDate.AddDays(1)
                 : GetNextDateWeekly(LastDate);
 
             return date.FullDateTime(TimeSpan.Zero);
         }
 
-        private DateTime GetNextDateWeekly(DateTime LastDate)
+        private DateTime GetNextDateWeekly(DateTime lastDate)
         {
-            DateTime[] weekActiveDays = LastDate.ActiveWeekDays(configuration.WeeklyActiveDays);
+            DateTime[] weekActiveDays = lastDate.ActiveWeekDays(_configuration.WeeklyActiveDays);
 
-            int IndexDay = Array.IndexOf(weekActiveDays, LastDate);
-            if (IndexDay < configuration.WeeklyActiveDays.Length - 1)
+            int indexDay = Array.IndexOf(weekActiveDays, lastDate);
+            if (indexDay < _configuration.WeeklyActiveDays.Length - 1)
             {
-                return weekActiveDays[IndexDay + 1].FullDateTime(TimeSpan.Zero);
+                return weekActiveDays[indexDay + 1].FullDateTime(TimeSpan.Zero);
             }
 
-            return weekActiveDays[0].Date.AddDays(this.configuration.WeeklyPeriodicity * 7);
+            return weekActiveDays[0].Date.AddDays(_configuration.WeeklyPeriodicity * 7);
         }
-            
+
         public string GetDescription(DateTime NextDate)
         {
-            if (configuration.Type == ConfigurationTypes.Once)
+            if (_configuration.Type == ConfigurationTypes.Once)
             {
-                return
-               $@"Occurs {this.GetTextOcurrs()}. Schedule will be used on {NextDate:dd/MM/yyyy} at {NextDate:HH:mm} {this.GetTextLimits()}".Trim();
+                return $@"Occurs {GetTextOcurrs()}. Schedule will be used on {NextDate.ToShortDateString()} at {NextDate.ToShortTimeString()} {GetTextLimits()}".Trim();
             }
 
-            return $@"Occurs {this.GetTextOcurrs()} {this.GetTextLimits()}".Trim(); ;
+            return $@"Occurs {GetTextOcurrs()} {GetTextLimits()}".Trim(); ;
         }
     }
 }

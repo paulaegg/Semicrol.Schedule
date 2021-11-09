@@ -424,7 +424,7 @@ namespace Semicrol.Schedule.Test
 
             result.Length.Should().Be(1);
             result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3));
-            result[0].Description.Should().Be("Occurs once. Schedule will be used on 03/01/2020 at 00:00 starting on 02/01/2020 and ending on 10/01/2020");
+            result[0].Description.Should().Be("Occurs once. Schedule will be used on 03/01/2020 at 0:00 starting on 02/01/2020 and ending on 10/01/2020");
         }
         #endregion
 
