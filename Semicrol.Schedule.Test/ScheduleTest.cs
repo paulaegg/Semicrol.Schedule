@@ -306,7 +306,7 @@ namespace Semicrol.Schedule.Test
             {
                 Enabled = false,
             };
-            
+
             Schedule Schedule = new(configuration);
             var result = Schedule.CalculateSerie(1);
             result[0].Description.Should().Be("The process is disabled");

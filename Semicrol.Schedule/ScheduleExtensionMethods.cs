@@ -6,97 +6,36 @@ namespace Semicrol.Schedule
 {
     public static class ScheduleExtensionMethods
     {
-        public static Boolean IsValid(this DateTime Date)
+        public static Boolean IsValid(this DateTime date)
         {
-            return Date != DateTime.MaxValue && Date != DateTime.MinValue;
+            return date != DateTime.MaxValue && date != DateTime.MinValue;
         }
 
-        public static Boolean IsValid(this int Number)
+        public static Boolean IsValid(this int number)
         {
-            return int.TryParse(Number.ToString(), out int result);
+            return int.TryParse(number.ToString(), out _);
         }
 
-        public static Boolean IsValid(this TimeSpan Time)
+        public static Boolean IsValid(this TimeSpan time)
         {
-            return Time.TotalHours < 24 && Time.TotalHours >= 0;
+            return time.TotalHours < 24 && time.TotalHours >= 0;
         }
 
-        public static DateTime[] ActiveWeekDays(this DateTime Date, DayOfWeek[] WeeklyActiveDays)
+        public static DateTime[] ActiveWeekDays(this DateTime date, DayOfWeek[] weeklyActiveDays)
         {
-            List<DateTime> WeekDays = new List<DateTime>();
-
-            switch (Date.DayOfWeek)
+            List<DateTime> weekDays = new List<DateTime>();
+            int weekIndex = date.DayOfWeek == DayOfWeek.Sunday ? -6 : 1 - ((int)date.DayOfWeek);
+            for (int index = 0; index < 7; index++)
             {
-                case DayOfWeek.Monday:
-                    WeekDays.Add(Date);
-                    WeekDays.Add(Date.AddDays(1));
-                    WeekDays.Add(Date.AddDays(2));
-                    WeekDays.Add(Date.AddDays(3));
-                    WeekDays.Add(Date.AddDays(4));
-                    WeekDays.Add(Date.AddDays(5));
-                    WeekDays.Add(Date.AddDays(6));
-                    break;
-                case DayOfWeek.Tuesday:
-                    WeekDays.Add(Date.AddDays(-1));
-                    WeekDays.Add(Date);
-                    WeekDays.Add(Date.AddDays(1));
-                    WeekDays.Add(Date.AddDays(2));
-                    WeekDays.Add(Date.AddDays(3));
-                    WeekDays.Add(Date.AddDays(4));
-                    WeekDays.Add(Date.AddDays(5));
-                    break;
-                case DayOfWeek.Wednesday:
-                    WeekDays.Add(Date.AddDays(-2));
-                    WeekDays.Add(Date.AddDays(-1));
-                    WeekDays.Add(Date);
-                    WeekDays.Add(Date.AddDays(1));
-                    WeekDays.Add(Date.AddDays(2));
-                    WeekDays.Add(Date.AddDays(3));
-                    WeekDays.Add(Date.AddDays(4));
-                    break;
-                case DayOfWeek.Thursday:
-                    WeekDays.Add(Date.AddDays(-3));
-                    WeekDays.Add(Date.AddDays(-2));
-                    WeekDays.Add(Date.AddDays(-1));
-                    WeekDays.Add(Date);
-                    WeekDays.Add(Date.AddDays(1));
-                    WeekDays.Add(Date.AddDays(2));
-                    WeekDays.Add(Date.AddDays(3));
-                    break;
-                case DayOfWeek.Friday:
-                    WeekDays.Add(Date.AddDays(-4));
-                    WeekDays.Add(Date.AddDays(-3));
-                    WeekDays.Add(Date.AddDays(-2));
-                    WeekDays.Add(Date.AddDays(-1));
-                    WeekDays.Add(Date);
-                    WeekDays.Add(Date.AddDays(1));
-                    WeekDays.Add(Date.AddDays(2));
-                    break;
-                case DayOfWeek.Saturday:
-                    WeekDays.Add(Date.AddDays(-5));
-                    WeekDays.Add(Date.AddDays(-4));
-                    WeekDays.Add(Date.AddDays(-3));
-                    WeekDays.Add(Date.AddDays(-2));
-                    WeekDays.Add(Date.AddDays(-1));
-                    WeekDays.Add(Date);
-                    WeekDays.Add(Date.AddDays(1));
-                    break;
-                case DayOfWeek.Sunday:
-                    WeekDays.Add(Date.AddDays(-6));
-                    WeekDays.Add(Date.AddDays(-5));
-                    WeekDays.Add(Date.AddDays(-4));
-                    WeekDays.Add(Date.AddDays(-3));
-                    WeekDays.Add(Date.AddDays(-2));
-                    WeekDays.Add(Date.AddDays(-1));
-                    WeekDays.Add(Date);
-                    break;
+                weekDays.Add(date.AddDays(weekIndex++));
             }
-            return WeekDays.Where(D => WeeklyActiveDays.Contains(D.DayOfWeek)).ToArray();
+
+            return weekDays.Where(D => weeklyActiveDays.Contains(D.DayOfWeek)).ToArray();
         }
 
-        public static DateTime FullDateTime(this DateTime Day, TimeSpan Time)
+        public static DateTime FullDateTime(this DateTime day, TimeSpan time)
         {
-            return new DateTime(Day.Year, Day.Month, Day.Day, Time.Hours, Time.Minutes, Time.Seconds);
+            return new DateTime(day.Year, day.Month, day.Day, time.Hours, time.Minutes, time.Seconds);
         }
 
         public static OutPut[] CalculateSerie(this Schedule schedule, int repeticions)
