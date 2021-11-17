@@ -13,26 +13,11 @@ namespace Semicrol.Schedule
 
         public Schedule(Configuration configuration)
         {
-            if (configuration == null)
-            {
-                throw new Exception("You should define a configuration for the schedule");
-            }
-            _configuration = configuration;
+            _configuration = configuration ?? throw new Exception("You should define a configuration for the schedule");
         }
 
         private DateTime lastOutputDate { get; set; }
-
-        private Validator validator
-        {
-            get
-            {
-                if (_validator == null)
-                {
-                    _validator = new Validator(_configuration);
-                }
-                return _validator;
-            }
-        }
+        
 
         #region Description Texts
         private string GetTextOcurrs()
@@ -106,6 +91,14 @@ namespace Semicrol.Schedule
 
         #endregion
 
+        private Validator GetValidator()
+        {
+            if (_validator == null)
+            {
+                _validator = new Validator(_configuration);
+            }
+            return _validator;
+        }
         public OutPut GetNextExecution()
         {
             if (!_configuration.Enabled)
@@ -113,7 +106,7 @@ namespace Semicrol.Schedule
                 return new OutPut() { Description = "The process is disabled" };
             }
 
-            validator.ValidateConfiguration();
+            GetValidator().ValidateConfiguration();
             lastOutputDate = GetNextDate();
 
             OutPut nextExecution = new OutPut()
@@ -131,21 +124,21 @@ namespace Semicrol.Schedule
                 ? GetNextDateOnceType()
                 : GetNextRecurringExecution();
 
-            validator.ValidateCorrectDateWithCurrentDate(nextDate);
-            validator.ValidateDateInLimits(nextDate);
+            GetValidator().ValidateCorrectDateWithCurrentDate(nextDate);
+            GetValidator().ValidateDateInLimits(nextDate);
 
             return nextDate;
         }
 
         private DateTime GetNextDateOnceType()
         {
-            validator.ValidateRequiredConfigurationDate();
+            GetValidator().ValidateRequiredConfigurationDate();
             return _configuration.OnceExecutionTime.Value;
         }
 
         private DateTime GetNextRecurringExecution()
         {
-            validator.ValidateWeeklyConfiguration();
+            GetValidator().ValidateWeeklyConfiguration();
             DateTime NextDay = lastOutputDate.IsValid() ? lastOutputDate : GetFirstActiveDay();
 
             DateTime? nextDate = CalculateTime(NextDay);
@@ -193,7 +186,7 @@ namespace Semicrol.Schedule
 
         private DateTime? GetOnceTime(DateTime day)
         {
-            validator.ValidateDailyOnceFrecuency();
+            GetValidator().ValidateDailyOnceFrecuency();
             if (lastOutputDate == day) { return null; }
 
             return day.FullDateTime(_configuration.DailyOnceTime);
@@ -201,7 +194,7 @@ namespace Semicrol.Schedule
 
         private DateTime? GetRecurringTime(DateTime day)
         {
-            validator.ValidateDailyFrecuency();
+            GetValidator().ValidateDailyFrecuency();
 
             if (!lastOutputDate.IsValid() || lastOutputDate.Date < day.Date)
             {
