@@ -41,7 +41,7 @@ namespace Semicrol.Schedule
 
         private string GetTextDailyConfig()
         {
-            if (_configuration.Periodcity == PeriodicityType.Daily) { return "day"; }
+            if (_configuration.Periodcity == PeriodicityTypes.Daily) { return "day"; }
             string weekText = _configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
             return $"{_configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays()}";
         }
@@ -99,6 +99,7 @@ namespace Semicrol.Schedule
             }
             return _validator;
         }
+
         public OutPut GetNextExecution()
         {
             if (!_configuration.Enabled)
@@ -138,7 +139,7 @@ namespace Semicrol.Schedule
 
         private DateTime GetNextRecurringExecution()
         {
-            GetValidator().ValidateWeeklyConfiguration();
+            GetValidator().ValidatePeriodicityConfiguration();
             DateTime NextDay = lastOutputDate.IsValid() ? lastOutputDate : GetFirstActiveDay();
 
             DateTime? nextDate = CalculateTime(NextDay);
@@ -152,9 +153,17 @@ namespace Semicrol.Schedule
 
         private DateTime GetFirstActiveDay()
         {
-            return _configuration.Periodcity == PeriodicityType.Daily
-                ? GetFirstActiveDayDaily()
-                : GetFirstActiveDayWeekly();
+            switch (_configuration.Periodcity)
+            {
+                case PeriodicityTypes.Daily:
+                    return GetFirstActiveDayDaily();
+                case PeriodicityTypes.Weekly:
+                   return GetFirstActiveDayWeekly();
+                case PeriodicityTypes.Monthly:
+                    return DateTime.Today;
+                default:
+                    return lastOutputDate;
+            }
         }
 
         private DateTime GetFirstActiveDayDaily()
@@ -216,11 +225,11 @@ namespace Semicrol.Schedule
         {
             switch (_configuration.DailyPeriodicityType)
             {
-                case TimePeriodicityType.Hours:
+                case TimePeriodicityTypes.Hours:
                     return new TimeSpan(_configuration.DailyPeriodicity, 0, 0);
-                case TimePeriodicityType.Minutes:
+                case TimePeriodicityTypes.Minutes:
                     return new TimeSpan(0, _configuration.DailyPeriodicity, 0);
-                case TimePeriodicityType.Seconds:
+                case TimePeriodicityTypes.Seconds:
                     return new TimeSpan(0, 0, _configuration.DailyPeriodicity);
                 default:
                     return new TimeSpan(0, 0, 0);
@@ -229,9 +238,20 @@ namespace Semicrol.Schedule
 
         private DateTime GetNextDate(DateTime lastDate)
         {
-            DateTime date = _configuration.Periodcity == PeriodicityType.Daily
-                ? lastDate.AddDays(1)
-                : GetNextDateWeekly(lastDate);
+            DateTime date = new DateTime();
+
+            switch (_configuration.Periodcity)
+            {
+                case PeriodicityTypes.Daily:
+                    date = lastDate.AddDays(1);
+                    break;
+                case PeriodicityTypes.Weekly:
+                    date = GetNextDateWeekly(lastDate); 
+                    break;
+                case PeriodicityTypes.Monthly:
+                    date = DateTime.Today;
+                    break;
+            }
 
             return date.FullDateTime(TimeSpan.Zero);
         }

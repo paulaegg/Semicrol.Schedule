@@ -123,7 +123,7 @@ namespace Semicrol.Schedule.Test
         {
             Configuration configuration = new()
             {
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = int.MinValue
             };
             Validator validator = new(configuration);
@@ -136,7 +136,7 @@ namespace Semicrol.Schedule.Test
         {
             Configuration configuration = new()
             {
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 25
             };
             Validator validator = new(configuration);
@@ -149,7 +149,7 @@ namespace Semicrol.Schedule.Test
         {
             Configuration configuration = new()
             {
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 25,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday }
             };
@@ -437,7 +437,7 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Daily,
+                Periodcity = PeriodicityTypes.Daily,
                 DailyType = ConfigurationTypes.Once,
                 DailyOnceTime = new TimeSpan(24, 0, 0)
             };
@@ -454,7 +454,7 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Daily,
+                Periodcity = PeriodicityTypes.Daily,
                 DailyType = ConfigurationTypes.Once,
                 DailyOnceTime = new TimeSpan(2, 0, 0)
             };
@@ -477,7 +477,7 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Daily,
+                Periodcity = PeriodicityTypes.Daily,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 0
             };
@@ -494,10 +494,10 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Daily,
+                Periodcity = PeriodicityTypes.Daily,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 5,
-                DailyPeriodicityType = TimePeriodicityType.Hours,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
                 DailyStartTime = new TimeSpan(-2, 0, 0)
             };
             Schedule Schedule = new(configuration);
@@ -513,10 +513,10 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Daily,
+                Periodcity = PeriodicityTypes.Daily,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 5,
-                DailyPeriodicityType = TimePeriodicityType.Hours,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
                 DailyEndTime = TimeSpan.Zero
             };
             Schedule Schedule = new(configuration);
@@ -532,10 +532,10 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Daily,
+                Periodcity = PeriodicityTypes.Daily,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 12,
-                DailyPeriodicityType = TimePeriodicityType.Hours
+                DailyPeriodicityType = TimePeriodicityTypes.Hours
             };
             Schedule Schedule = new(configuration);
             var result = Schedule.CalculateSerie(6);
@@ -562,7 +562,7 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = -1
 
             };
@@ -579,7 +579,7 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 1,
                 WeeklyActiveDays = new DayOfWeek[] { }
             };
@@ -596,7 +596,7 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 1,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Thursday }
             };
@@ -619,12 +619,12 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 1,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Friday },
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 12,
-                DailyPeriodicityType = TimePeriodicityType.Hours
+                DailyPeriodicityType = TimePeriodicityTypes.Hours
             };
             Schedule Schedule = new(configuration);
             var result = Schedule.CalculateSerie(6);
@@ -648,12 +648,12 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 2,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Tuesday, DayOfWeek.Friday, DayOfWeek.Sunday },
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 12,
-                DailyPeriodicityType = TimePeriodicityType.Hours
+                DailyPeriodicityType = TimePeriodicityTypes.Hours
             };
             Schedule Schedule = new(configuration);
             var result = Schedule.CalculateSerie(10);
@@ -681,12 +681,12 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 Type = ConfigurationTypes.Recurring,
                 CurrentDate = new DateTime(2020, 1, 1),
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Saturday },
                 WeeklyPeriodicity = 2,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 2,
-                DailyPeriodicityType = TimePeriodicityType.Hours,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
                 DailyStartTime = new TimeSpan(4, 0, 0),
                 DailyEndTime = new TimeSpan(8, 0, 0),
                 StartDate = new DateTime(2020, 1, 2),
@@ -717,12 +717,12 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 Type = ConfigurationTypes.Recurring,
                 CurrentDate = new DateTime(2020, 1, 1),
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday },
                 WeeklyPeriodicity = 2,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 2,
-                DailyPeriodicityType = TimePeriodicityType.Minutes,
+                DailyPeriodicityType = TimePeriodicityTypes.Minutes,
                 DailyStartTime = new TimeSpan(4, 30, 0),
                 DailyEndTime = new TimeSpan(4, 35, 0),
                 StartDate = new DateTime(2020, 1, 2)
@@ -749,12 +749,12 @@ namespace Semicrol.Schedule.Test
                 Enabled = true,
                 Type = ConfigurationTypes.Recurring,
                 CurrentDate = new DateTime(2020, 1, 1),
-                Periodcity = PeriodicityType.Weekly,
+                Periodcity = PeriodicityTypes.Weekly,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Sunday },
                 WeeklyPeriodicity = 2,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 2,
-                DailyPeriodicityType = TimePeriodicityType.Seconds,
+                DailyPeriodicityType = TimePeriodicityTypes.Seconds,
                 DailyStartTime = new TimeSpan(4, 30, 10),
                 DailyEndTime = new TimeSpan(4, 30, 15),
                 StartDate = new DateTime(2020, 1, 2)
@@ -772,6 +772,43 @@ namespace Semicrol.Schedule.Test
             result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 4, 30, 10));
 
             result[0].Description.Should().Be(@"Occurs every 2 weeks on Monday and Sunday every 2 Seconds between 04:30:10 and 04:30:15 starting on 02/01/2020");
+        }
+
+        #endregion
+
+        #region Schedule Type Occurs Monthly
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_DayType()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                Day = 15,
+                MonthlyPeriodicity = 2,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                DailyStartTime = new TimeSpan(2, 0, 0),
+                DailyEndTime = new TimeSpan(8, 0, 0),
+                StartDate = new DateTime(2020, 1, 2)
+            };
+            Schedule Schedule = new(configuration);
+            //var result = Schedule.CalculateSerie(7);
+
+            //result.Length.Should().Be(7);
+            //result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 30, 0));
+            //result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 32, 0));
+            //result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 34, 0));
+            //result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 30, 0));
+            //result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 32, 0));
+            //result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 34, 0));
+            //result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 20, 4, 30, 0));
+            //result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
         }
 
         #endregion

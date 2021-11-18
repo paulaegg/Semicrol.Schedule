@@ -53,9 +53,23 @@ namespace Semicrol.Schedule
             }
         }
 
+        public void ValidatePeriodicityConfiguration()
+        {
+            switch (configuration.Periodcity)
+            {
+                case PeriodicityTypes.Daily:
+                    break;
+                case PeriodicityTypes.Weekly:
+                    ValidateWeeklyConfiguration();
+                    break;
+                case PeriodicityTypes.Monthly:
+                    break;
+            }
+        }
+
         public void ValidateWeeklyConfiguration()
         {
-            if (configuration.Periodcity != PeriodicityType.Weekly) { return; }
+            if (configuration.Periodcity != PeriodicityTypes.Weekly) { return; }
 
             if (configuration.WeeklyPeriodicity <= 0 || configuration.WeeklyPeriodicity.IsValid() == false)
             {

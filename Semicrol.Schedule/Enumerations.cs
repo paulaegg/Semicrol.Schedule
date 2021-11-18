@@ -4,21 +4,51 @@
     {
         public enum ConfigurationTypes
         {
-            Once = 0,
-            Recurring = 1
+            Once,
+            Recurring
         }
 
-        public enum PeriodicityType
+        public enum PeriodicityTypes
         {
-            Daily = 0,
-            Weekly = 1
+            Daily,
+            Weekly, 
+            Monthly
         }
 
-        public enum TimePeriodicityType
+        public enum TimePeriodicityTypes
         {
-            Hours = 0,
-            Minutes = 1,
-            Seconds = 3
+            Hours,
+            Minutes,
+            Seconds
+        }
+
+        public enum MonthlyTypes
+        {
+            Day,
+            Built
+        }
+
+        public enum OrdinalPeriodicityTypes
+        {
+            First,
+            Second,
+            Third,
+            Fourth,
+            Last
+        }
+
+        public enum AvailableWeekDays
+        {
+            Monday,
+            Tuesday, 
+            Wednesday, 
+            Thursday,
+            Friday, 
+            Saturday, 
+            Sunday, 
+            Day,
+            WeekDay,
+            WeekendDay
         }
     }
 }
