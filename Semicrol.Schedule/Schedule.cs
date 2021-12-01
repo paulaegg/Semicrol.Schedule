@@ -17,7 +17,7 @@ namespace Semicrol.Schedule
         }
 
         private DateTime lastOutputDate { get; set; }
-        
+
 
         #region Description Texts
         private string GetTextOcurrs()
@@ -41,7 +41,23 @@ namespace Semicrol.Schedule
 
         private string GetTextDailyConfig()
         {
-            if (_configuration.Periodcity == PeriodicityTypes.Daily) { return "day"; }
+            switch (_configuration.Periodcity)
+            {
+                case PeriodicityTypes.Daily:
+                    return "day";
+                case PeriodicityTypes.Weekly:
+                    return GetWeeklyPeriodicityText();
+                case PeriodicityTypes.Monthly:
+                    return string.Empty;
+                default:
+                    return string.Empty;
+            }
+            
+        }
+
+        private string GetWeeklyPeriodicityText()
+        {
+            if (_configuration.Periodcity != PeriodicityTypes.Weekly) { return string.Empty; }
             string weekText = _configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
             return $"{_configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays()}";
         }
@@ -158,9 +174,9 @@ namespace Semicrol.Schedule
                 case PeriodicityTypes.Daily:
                     return GetFirstActiveDayDaily();
                 case PeriodicityTypes.Weekly:
-                   return GetFirstActiveDayWeekly();
+                    return GetFirstActiveDayWeekly();
                 case PeriodicityTypes.Monthly:
-                    return DateTime.Today;
+                    return GetFirstActiveDayMonthly();
                 default:
                     return lastOutputDate;
             }
@@ -184,6 +200,43 @@ namespace Semicrol.Schedule
                 firstActiveDate = firstActiveDate.AddDays(1);
             }
             return firstActiveDate;
+        }
+
+        private DateTime GetFirstActiveDayMonthly()
+        {
+            return _configuration.MonthlyType == MonthlyTypes.Day
+                ? GetFirstActiveDayMonthlyDayType()
+                : GetFirstActiveDayMonthlyBiuldType();
+        }
+
+        private DateTime GetFirstActiveDayMonthlyDayType()
+        {
+            _validator.ValidateMonthliConfigurationDayType();
+
+            DateTime firstActiveDate = _configuration.StartDate ?? _configuration.CurrentDate;
+
+            if (firstActiveDate.Day > _configuration.MonthlyDay )
+            {
+                this.GetNextValidMonth(firstActiveDate);
+            }
+
+            return new DateTime(firstActiveDate.Year, firstActiveDate.Month, _configuration.MonthlyDay);
+        }
+
+        private DateTime GetNextValidMonth(DateTime date)
+        {
+            while (DateTime.DaysInMonth(date.Year, date.Month) < _configuration.MonthlyDay)
+            {
+                date.AddMonths(1);                
+            }
+            return new DateTime(_configuration.MonthlyDay, date.Month, date.Year);
+        }
+    
+        private DateTime GetFirstActiveDayMonthlyBiuldType()
+        {
+            _validator.ValidateMonthliConfigurationBiuldType();
+            //Si es Built mirar
+            return DateTime.Today;
         }
 
         private DateTime? CalculateTime(DateTime day)
@@ -249,7 +302,7 @@ namespace Semicrol.Schedule
                     date = GetNextDateWeekly(lastDate); 
                     break;
                 case PeriodicityTypes.Monthly:
-                    date = DateTime.Today;
+                    date = GetNextDateMonthly(lastDate);
                     break;
             }
 
@@ -267,6 +320,16 @@ namespace Semicrol.Schedule
             }
 
             return weekActiveDays[0].Date.AddDays(_configuration.WeeklyPeriodicity * 7);
+        }
+
+        private DateTime GetNextDateMonthly(DateTime lastDate)
+        {
+            if (_configuration.MonthlyType == MonthlyTypes.Day)
+            {
+                return lastDate.AddMonths(_configuration.MonthlyPeriodicity);
+            }
+            //Si es Built mirar
+            return DateTime.Today;
         }
 
         public string GetDescription(DateTime nextDate)

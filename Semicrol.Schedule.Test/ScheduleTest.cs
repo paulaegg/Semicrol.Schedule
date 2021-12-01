@@ -423,7 +423,7 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(1);
 
             result.Length.Should().Be(1);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3));
             result[0].Description.Should().Be("Occurs once. Schedule will be used on 03/01/2020 at 0:00 starting on 02/01/2020 and ending on 10/01/2020");
         }
         #endregion
@@ -462,9 +462,9 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(3);
 
             result.Length.Should().Be(3);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 1, 2, 0, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 2, 2, 0, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 2, 0, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 2, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 2, 0, 0));
 
             result[0].Description.Should().Be(@"Occurs every day at 02:00:00");
         }
@@ -541,12 +541,12 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(6);
 
             result.Length.Should().Be(6);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 1, 0, 0, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 1, 12, 0, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 2, 0, 0, 0));
-            result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 2, 12, 0, 0));
-            result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 0, 0, 0));
-            result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 12, 0, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 12, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 12, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 12, 0, 0));
 
             result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:58");
         }
@@ -604,9 +604,9 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(3);
 
             result.Length.Should().Be(3);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 2, 0, 0, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 0, 0, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 9, 0, 0, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 6, 0, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 9, 0, 0, 0));
 
             result[0].Description.Should().Be(@"Occurs every 1 week on Monday and Thursday at 00:00:00");
         }
@@ -630,12 +630,12 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(6);
 
             result.Length.Should().Be(6);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 0, 0, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 12, 0, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 0, 0, 0));
-            result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 12, 0, 0));
-            result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 10, 0, 0, 0));
-            result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 10, 12, 0, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 12, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 6, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 6, 12, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 10, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 10, 12, 0, 0));
 
             result[0].Description.Should().Be(@"Occurs every 1 week on Monday and Friday every 12 Hours between 00:00:00 and 23:59:58");
         }
@@ -659,16 +659,16 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(10);
 
             result.Length.Should().Be(10);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 0, 0, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 3, 12, 0, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 5, 0, 0, 0));
-            result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 5, 12, 0, 0));
-            result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 14, 0, 0, 0));
-            result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 14, 12, 0, 0));
-            result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 17, 0, 0, 0));
-            result[7].NextExecutionDate.Should().Be(new DateTime(2020, 1, 17, 12, 0, 0));
-            result[8].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 0, 0, 0));
-            result[9].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 12, 0, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 12, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 12, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 14, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 14, 12, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 17, 0, 0, 0));
+            result[7].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 17, 12, 0, 0));
+            result[8].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 0, 0, 0));
+            result[9].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 12, 0, 0));
 
             result[0].Description.Should().Be(@"Occurs every 2 weeks on Tuesday, Friday and Sunday every 12 Hours between 00:00:00 and 23:59:58");
         }
@@ -696,16 +696,16 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(10);
 
             result.Length.Should().Be(10);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 4, 4, 0, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 4, 6, 0, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 4, 8, 0, 0));
-            result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 4, 0, 0));
-            result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 6, 0, 0));
-            result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 8, 0, 0));
-            result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 18, 4, 0, 0));
-            result[7].NextExecutionDate.Should().Be(new DateTime(2020, 1, 18, 6, 0, 0));
-            result[8].NextExecutionDate.Should().Be(new DateTime(2020, 1, 18, 8, 0, 0));
-            result[9].NextExecutionDate.Should().Be(new DateTime(2020, 1, 27, 4, 0, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 4, 4, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 4, 6, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 4, 8, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 6, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 8, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 18, 4, 0, 0));
+            result[7].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 18, 6, 0, 0));
+            result[8].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 18, 8, 0, 0));
+            result[9].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 27, 4, 0, 0));
             result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Saturday every 2 Hours between 04:00:00 and 08:00:00 starting on 02/01/2020 and ending on 31/01/2020");
         }
 
@@ -731,13 +731,13 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(7);
 
             result.Length.Should().Be(7);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 30, 0));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 32, 0));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 34, 0));
-            result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 30, 0));
-            result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 32, 0));
-            result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 34, 0));
-            result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 20, 4, 30, 0));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 6, 4, 30, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 6, 4, 32, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 6, 4, 34, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 8, 4, 30, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 8, 4, 32, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 8, 4, 34, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 20, 4, 30, 0));
             result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
         }
 
@@ -763,13 +763,13 @@ namespace Semicrol.Schedule.Test
             var result = Schedule.CalculateSerie(7);
 
             result.Length.Should().Be(7);
-            result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 5, 4, 30, 10));
-            result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 5, 4, 30, 12));
-            result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 5, 4, 30, 14));
-            result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 4, 30, 10));
-            result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 4, 30, 12));
-            result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 13, 4, 30, 14));
-            result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 19, 4, 30, 10));
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 10));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 12));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 14));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 10));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 12));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 14));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 4, 30, 10));
 
             result[0].Description.Should().Be(@"Occurs every 2 weeks on Monday and Sunday every 2 Seconds between 04:30:10 and 04:30:15 starting on 02/01/2020");
         }
@@ -785,29 +785,29 @@ namespace Semicrol.Schedule.Test
             {
                 Enabled = true,
                 Type = ConfigurationTypes.Recurring,
-                CurrentDate = new DateTime(2020, 1, 1),
+                CurrentDate = new DateTime(2020, 10, 1),
                 Periodcity = PeriodicityTypes.Monthly,
                 MonthlyType = MonthlyTypes.Day,
-                Day = 15,
+                MonthlyDay = 15, //Si ponemos día 30 en febrero cambia al 28, esto es correcto? luego deberia mantenerse el 28 o cambiar de nuevo al 30? lo mismo ocurre con el 31
                 MonthlyPeriodicity = 2,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 2,
                 DailyPeriodicityType = TimePeriodicityTypes.Hours,
                 DailyStartTime = new TimeSpan(2, 0, 0),
-                DailyEndTime = new TimeSpan(8, 0, 0),
-                StartDate = new DateTime(2020, 1, 2)
+                DailyEndTime = new TimeSpan(4, 0, 0),
+                StartDate = new DateTime(2020, 10, 2)
             };
             Schedule Schedule = new(configuration);
-            //var result = Schedule.CalculateSerie(7);
+            var result = Schedule.CalculateSerie(7);
 
-            //result.Length.Should().Be(7);
-            //result[0].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 30, 0));
-            //result[1].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 32, 0));
-            //result[2].NextExecutionDate.Should().Be(new DateTime(2020, 1, 6, 4, 34, 0));
-            //result[3].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 30, 0));
-            //result[4].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 32, 0));
-            //result[5].NextExecutionDate.Should().Be(new DateTime(2020, 1, 8, 4, 34, 0));
-            //result[6].NextExecutionDate.Should().Be(new DateTime(2020, 1, 20, 4, 30, 0));
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 15, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 15, 4, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 15, 2, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 15, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 2, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 4, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 15, 2, 0, 0));
             //result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
         }
 

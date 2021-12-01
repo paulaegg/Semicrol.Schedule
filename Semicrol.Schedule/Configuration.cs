@@ -29,10 +29,10 @@ namespace Semicrol.Schedule
 
         #region Monthly Configuration
         public MonthlyTypes MonthlyType { get; set; }
-        public int Day { get; set; }
+        public int MonthlyDay { get; set; }
         public int MonthlyPeriodicity { get; set; }
-        public OrdinalPeriodicityTypes OrdinalPeriodicity { get; set; }
-        public AvailableWeekDays WeekDay { get; set; }
+        public OrdinalPeriodicityTypes MonthlyOrdinalPeriodicity { get; set; }
+        public AvailableWeekDays MonthlyWeekDay { get; set; }
         #endregion
 
     }
