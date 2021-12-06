@@ -217,19 +217,21 @@ namespace Semicrol.Schedule
 
             if (firstActiveDate.Day > _configuration.MonthlyDay )
             {
-                this.GetNextValidMonth(firstActiveDate);
+                firstActiveDate = this.GetNextValidMonth(firstActiveDate);
             }
 
-            return new DateTime(firstActiveDate.Year, firstActiveDate.Month, _configuration.MonthlyDay);
+            return CheckLastMonthDay(firstActiveDate.Year, firstActiveDate.Month, _configuration.MonthlyDay);
         }
 
         private DateTime GetNextValidMonth(DateTime date)
         {
-            while (DateTime.DaysInMonth(date.Year, date.Month) < _configuration.MonthlyDay)
+            do
             {
-                date.AddMonths(1);                
+                date = date.AddMonths(1);
             }
-            return new DateTime(_configuration.MonthlyDay, date.Month, date.Year);
+            while (DateTime.DaysInMonth(date.Year, date.Month) < _configuration.MonthlyDay);
+
+            return date;
         }
     
         private DateTime GetFirstActiveDayMonthlyBiuldType()
@@ -326,10 +328,23 @@ namespace Semicrol.Schedule
         {
             if (_configuration.MonthlyType == MonthlyTypes.Day)
             {
-                return lastDate.AddMonths(_configuration.MonthlyPeriodicity);
+                DateTime nextDate = lastDate.AddMonths(_configuration.MonthlyPeriodicity);
+                return CheckLastMonthDay(nextDate.Year, nextDate.Month, nextDate.Day);
             }
             //Si es Built mirar
             return DateTime.Today;
+        }
+
+        private DateTime CheckLastMonthDay(int year, int month, int day)
+        {
+            if (day != _configuration.MonthlyDay ||
+                day > DateTime.DaysInMonth(year, month))
+            {
+                day = _configuration.MonthlyDay <= DateTime.DaysInMonth(year, month)
+                    ? _configuration.MonthlyDay
+                    : DateTime.DaysInMonth(year, month);
+            }
+            return new DateTime(year, month, day);
         }
 
         public string GetDescription(DateTime nextDate)

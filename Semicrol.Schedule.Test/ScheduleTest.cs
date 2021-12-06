@@ -788,7 +788,7 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = new DateTime(2020, 10, 1),
                 Periodcity = PeriodicityTypes.Monthly,
                 MonthlyType = MonthlyTypes.Day,
-                MonthlyDay = 15, //Si ponemos día 30 en febrero cambia al 28, esto es correcto? luego deberia mantenerse el 28 o cambiar de nuevo al 30? lo mismo ocurre con el 31
+                MonthlyDay = 15, 
                 MonthlyPeriodicity = 2,
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 2,
@@ -811,6 +811,104 @@ namespace Semicrol.Schedule.Test
             //result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
         }
 
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_DayType2()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 10, 1),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 30, 
+                MonthlyPeriodicity = 2,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                DailyStartTime = new TimeSpan(2, 0, 0),
+                DailyEndTime = new TimeSpan(4, 0, 0),
+                StartDate = new DateTime(2020, 10, 2)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 30, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 30, 4, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 30, 2, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 30, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 28, 2, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 28, 4, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 30, 2, 0, 0));
+            //result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_DayType3()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 9, 1),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 31, 
+                MonthlyPeriodicity = 3,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                DailyStartTime = new TimeSpan(2, 0, 0),
+                DailyEndTime = new TimeSpan(4, 0, 0),
+                StartDate = new DateTime(2020, 9, 2)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 9, 30, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 9, 30, 4, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 31, 2, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 31, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 3, 31, 2, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 3, 31, 4, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 6, 30, 2, 0, 0));
+            //result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_DayType4()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 9, 10),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 5,
+                MonthlyPeriodicity = 3,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                DailyStartTime = new TimeSpan(2, 0, 0),
+                DailyEndTime = new TimeSpan(4, 0, 0),
+                StartDate = new DateTime(2020, 9, 10)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 5, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 5, 4, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 5, 2, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 5, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 5, 2, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 5, 4, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 7, 5, 2, 0, 0));
+            //result[0].Description.Should().Be("Occurs every 2 weeks on Monday and Wednesday every 2 Minutes between 04:30:00 and 04:35:00 starting on 02/01/2020");
+        }
         #endregion
     }
 }
