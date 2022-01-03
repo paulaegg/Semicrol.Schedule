@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -17,95 +18,6 @@ namespace Semicrol.Schedule
         }
 
         private DateTime lastOutputDate { get; set; }
-
-
-        #region Description Texts
-        private string GetTextOcurrs()
-        {
-            return _configuration.Type == ConfigurationTypes.Once ? "once" : $"every {GetTextDailyConfig()}{GetTextHours()}";
-        }
-
-        private string GetTextLimits()
-        {
-            if (!_configuration.StartDate.HasValue &&
-                !_configuration.EndDate.HasValue)
-            {
-                return string.Empty;
-            }
-            StringBuilder text = new StringBuilder(GetTextStarLimit());
-            text.Append(CheckHasBothLimits() ? " and " : string.Empty);
-            text.Append(GetTextEndLimit());
-
-            return text.ToString();
-        }
-
-        private string GetTextDailyConfig()
-        {
-            switch (_configuration.Periodcity)
-            {
-                case PeriodicityTypes.Daily:
-                    return "day";
-                case PeriodicityTypes.Weekly:
-                    return GetWeeklyPeriodicityText();
-                case PeriodicityTypes.Monthly:
-                    return string.Empty;
-                default:
-                    return string.Empty;
-            }
-            
-        }
-
-        private string GetWeeklyPeriodicityText()
-        {
-            if (_configuration.Periodcity != PeriodicityTypes.Weekly) { return string.Empty; }
-            string weekText = _configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
-            return $"{_configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays()}";
-        }
-
-        private string GetTextWeekDays()
-        {
-            if (_configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
-
-            StringBuilder text = new StringBuilder(_configuration.WeeklyActiveDays.First().ToString());
-            for (int index = 1; index < _configuration.WeeklyActiveDays.Length - 1; index++)
-            {
-                text.Append(", " + _configuration.WeeklyActiveDays[index].ToString());
-            }
-            text.Append(" and " + _configuration.WeeklyActiveDays.Last().ToString());
-            return text.ToString();
-        }
-
-        private string GetTextHours()
-        {
-            if (_configuration.DailyType == ConfigurationTypes.Once)
-            {
-                return $" at {_configuration.DailyOnceTime}";
-            }
-            return $" every {_configuration.DailyPeriodicity} {_configuration.DailyPeriodicityType} between " +
-                $"{_configuration.DailyStartTime} and {_configuration.DailyEndTime}";
-        }
-
-        private bool CheckHasBothLimits()
-        {
-            return !string.IsNullOrEmpty(GetTextStarLimit()) &&
-                   !string.IsNullOrEmpty(GetTextEndLimit());
-        }
-
-        private string GetTextStarLimit()
-        {
-            return _configuration.StartDate.HasValue
-                ? $"starting on {_configuration.StartDate.Value.ToShortDateString()}"
-                : string.Empty;
-        }
-
-        private string GetTextEndLimit()
-        {
-            return _configuration.EndDate.HasValue
-                ? $"ending on { _configuration.EndDate.Value.ToShortDateString()}"
-                : string.Empty;
-        }
-
-        #endregion
 
         private Validator GetValidator()
         {
@@ -189,7 +101,7 @@ namespace Semicrol.Schedule
 
         private DateTime GetFirstActiveDayWeekly()
         {
-            DateTime firstActiveDate = _configuration.StartDate ?? _configuration.CurrentDate;
+            DateTime firstActiveDate = GetFirstActiveDayDaily();
 
             for (int days = 0; days < 7; days++)
             {
@@ -213,7 +125,7 @@ namespace Semicrol.Schedule
         {
             _validator.ValidateMonthliConfigurationDayType();
 
-            DateTime firstActiveDate = _configuration.StartDate ?? _configuration.CurrentDate;
+            DateTime firstActiveDate = GetFirstActiveDayDaily();
 
             if (firstActiveDate.Day > _configuration.MonthlyDay )
             {
@@ -237,8 +149,93 @@ namespace Semicrol.Schedule
         private DateTime GetFirstActiveDayMonthlyBiuldType()
         {
             _validator.ValidateMonthliConfigurationBiuldType();
-            //Si es Built mirar
-            return DateTime.Today;
+            
+            return GetDayInMonth();
+        }
+
+        private DateTime GetDayInMonth()
+        {
+            return GetDayInMonth(new DateTime(GetFirstActiveDayDaily().Year, GetFirstActiveDayDaily().Month, 1));
+        }
+
+        private DateTime GetDayInMonth(DateTime date)
+        {
+            DateTime firstDayInMonth = new DateTime(date.Year, date.Month, 1);
+           
+            switch (this._configuration.MonthlyWeekDay)
+            {
+                case AvailableWeekDays.Day:
+                    return date < GetFirstActiveDayDaily() ? GetFirstActiveDayDaily() : date;
+                case AvailableWeekDays.WeekDay:
+                    DayOfWeek[] weekDays = new DayOfWeek[5] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+                    return GetDayInMonthWeekDayOption(firstDayInMonth, weekDays);
+                case AvailableWeekDays.WeekendDay:
+                    DayOfWeek[] weekendDays = new DayOfWeek[2] { DayOfWeek.Saturday, DayOfWeek.Sunday };
+                    return GetDayInMonthWeekDayOption(firstDayInMonth, weekendDays); ;
+                default:
+                    return GetDayInMonth(firstDayInMonth, (int)this._configuration.MonthlyWeekDay); 
+            }
+        }
+
+        private DateTime GetDayInMonthWeekDayOption(DateTime firstDayInMonth, DayOfWeek[] weekDays)
+        {
+            List<DateTime> dates = new List<DateTime>();
+            foreach (DayOfWeek day in weekDays)
+            {
+                DateTime date = GetDayInMonth(firstDayInMonth, (int)day);
+                if (date.Month == firstDayInMonth.Month)
+                {
+                    if ((weekDays.Length == 2 && date.Day != 7) ||
+                        (weekDays.Length == 5 && date.Day < 4))
+                    {
+                        return date;
+                    }                    
+                }
+                dates.Add(date);
+            }
+
+            firstDayInMonth = firstDayInMonth.AddMonths(1);
+            for (int i = 0; i < 3; i++)
+            {
+                if (weekDays.Contains(firstDayInMonth.DayOfWeek))
+                {
+                    return firstDayInMonth;
+                }
+                firstDayInMonth = firstDayInMonth.AddDays(1);
+                i++;
+            }
+            return firstDayInMonth;
+        }
+
+        private DateTime GetDayInMonth(DateTime firstDayInMonth, int day)
+        {
+            int calculateDays = day - (int)firstDayInMonth.DayOfWeek;
+            if (calculateDays < 0)
+            {
+                calculateDays += 7;
+            }
+            if (this._configuration.MonthlyOrdinalPeriodicity == OrdinalPeriodicityTypes.Last)
+            {
+                return GetLastWeekDayInMonth(firstDayInMonth.Year, firstDayInMonth.Month);
+            }
+            int searchedDay = (calculateDays + 1) + (7 * ((int)this._configuration.MonthlyOrdinalPeriodicity - 1));
+            DateTime returnDate = new DateTime(firstDayInMonth.Year, firstDayInMonth.Month, searchedDay);
+
+            if (returnDate < GetFirstActiveDayDaily())
+            {
+                returnDate = GetDayInMonth(firstDayInMonth.AddMonths(1), day);
+            }
+            return returnDate;
+        }
+
+        private DateTime GetLastWeekDayInMonth(int year, int month)
+        {
+            DateTime lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+            int difference = (int)lastDay.DayOfWeek - (int)_configuration.MonthlyWeekDay;
+            return difference > 0 
+                ? lastDay.AddDays(-1 * difference) 
+                : lastDay.AddDays(-1 * (7 + difference));
+
         }
 
         private DateTime? CalculateTime(DateTime day)
@@ -326,13 +323,13 @@ namespace Semicrol.Schedule
 
         private DateTime GetNextDateMonthly(DateTime lastDate)
         {
+            DateTime nextDate = lastDate.AddMonths(_configuration.MonthlyPeriodicity);
             if (_configuration.MonthlyType == MonthlyTypes.Day)
             {
-                DateTime nextDate = lastDate.AddMonths(_configuration.MonthlyPeriodicity);
                 return CheckLastMonthDay(nextDate.Year, nextDate.Month, nextDate.Day);
             }
-            //Si es Built mirar
-            return DateTime.Today;
+            
+            return this.GetDayInMonth(nextDate);
         }
 
         private DateTime CheckLastMonthDay(int year, int month, int day)
@@ -349,12 +346,7 @@ namespace Semicrol.Schedule
 
         public string GetDescription(DateTime nextDate)
         {
-            if (_configuration.Type == ConfigurationTypes.Once)
-            {
-                return $@"Occurs {GetTextOcurrs()}. Schedule will be used on {nextDate.ToShortDateString()} at {nextDate.ToShortTimeString()} {GetTextLimits()}".Trim();
-            }
-
-            return $@"Occurs {GetTextOcurrs()} {GetTextLimits()}".Trim(); ;
+            return Description.GetDescription(_configuration, nextDate);
         }
     }
 }

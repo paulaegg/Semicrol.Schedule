@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Description.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="OutPut.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

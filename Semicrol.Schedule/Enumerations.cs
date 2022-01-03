@@ -30,22 +30,22 @@
 
         public enum OrdinalPeriodicityTypes
         {
-            First,
-            Second,
-            Third,
-            Fourth,
+            First = 1,
+            Second = 2,
+            Third = 3,
+            Fourth = 4,
             Last
         }
 
         public enum AvailableWeekDays
         {
-            Monday,
-            Tuesday, 
-            Wednesday, 
-            Thursday,
-            Friday, 
-            Saturday, 
-            Sunday, 
+            Monday = 1,
+            Tuesday = 2, 
+            Wednesday = 3, 
+            Thursday = 4,
+            Friday = 5, 
+            Saturday = 6, 
+            Sunday = 7, 
             Day,
             WeekDay,
             WeekendDay
