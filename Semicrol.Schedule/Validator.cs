@@ -134,7 +134,7 @@ namespace Semicrol.Schedule
             }
         }
 
-        public void ValidateMonthliConfigurationDayType()
+        public void ValidateMonthlyConfigurationDayType()
         {
             if (_configuration.Periodcity != PeriodicityTypes.Monthly ||
                 _configuration.MonthlyType != MonthlyTypes.Day)
@@ -149,7 +149,7 @@ namespace Semicrol.Schedule
             }           
         }
 
-        public void ValidateMonthliConfigurationBiuldType()
+        public void ValidateMonthlyConfigurationBiuldType()
         {
             if (_configuration.Periodcity != PeriodicityTypes.Monthly ||
                 _configuration.MonthlyType != MonthlyTypes.Built)

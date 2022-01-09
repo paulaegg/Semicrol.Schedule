@@ -43,7 +43,14 @@ namespace Semicrol.Schedule
             OutPut[] serie = new OutPut[repeticions];
             for (int index = 0; index < repeticions; index++)
             {
-                serie[index] = schedule.GetNextExecution();
+                if (index == 0)
+                {
+                    serie[index] = schedule.GetNextExecution(DateTime.MinValue);
+                }
+                else
+                {
+                    serie[index] = schedule.GetNextExecution(serie[index - 1].NextExecutionDate);
+                }
             }
             return serie;
         }

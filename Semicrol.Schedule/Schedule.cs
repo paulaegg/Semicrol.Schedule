@@ -17,8 +17,6 @@ namespace Semicrol.Schedule
             _configuration = configuration ?? throw new Exception("You should define a configuration for the schedule");
         }
 
-        private DateTime lastOutputDate { get; set; }
-
         private Validator GetValidator()
         {
             if (_validator == null)
@@ -28,7 +26,7 @@ namespace Semicrol.Schedule
             return _validator;
         }
 
-        public OutPut GetNextExecution()
+        public OutPut GetNextExecution(DateTime lastOutputDate)
         {
             if (!_configuration.Enabled)
             {
@@ -36,7 +34,7 @@ namespace Semicrol.Schedule
             }
 
             GetValidator().ValidateConfiguration();
-            lastOutputDate = GetNextDate();
+            lastOutputDate = GetNextExecutionDate(lastOutputDate);
 
             OutPut nextExecution = new OutPut()
             {
@@ -47,11 +45,11 @@ namespace Semicrol.Schedule
             return nextExecution;
         }
 
-        public DateTime GetNextDate()
+        public DateTime GetNextExecutionDate(DateTime lastOutputDate)
         {
             DateTime nextDate = _configuration.Type == ConfigurationTypes.Once
                 ? GetNextDateOnceType()
-                : GetNextRecurringExecution();
+                : GetNextRecurringExecution(lastOutputDate);
 
             GetValidator().ValidateCorrectDateWithCurrentDate(nextDate);
             GetValidator().ValidateDateInLimits(nextDate);
@@ -65,16 +63,16 @@ namespace Semicrol.Schedule
             return _configuration.OnceExecutionTime.Value;
         }
 
-        private DateTime GetNextRecurringExecution()
+        private DateTime GetNextRecurringExecution(DateTime lastOutputDate)
         {
             GetValidator().ValidatePeriodicityConfiguration();
             DateTime NextDay = lastOutputDate.IsValid() ? lastOutputDate : GetFirstActiveDay();
 
-            DateTime? nextDate = CalculateTime(NextDay);
+            DateTime? nextDate = CalculateTime(lastOutputDate, NextDay);
             if (!nextDate.HasValue)
             {
                 NextDay = GetNextDate(NextDay);
-                nextDate = CalculateTime(NextDay);
+                nextDate = CalculateTime(lastOutputDate, NextDay);
             }
             return nextDate.Value;
         }
@@ -90,13 +88,18 @@ namespace Semicrol.Schedule
                 case PeriodicityTypes.Monthly:
                     return GetFirstActiveDayMonthly();
                 default:
-                    return lastOutputDate;
+                    return DateTime.Today;
             }
         }
 
         private DateTime GetFirstActiveDayDaily()
         {
-            return _configuration.StartDate ?? _configuration.CurrentDate;
+            if (_configuration.StartDate.HasValue &&
+                _configuration.StartDate.Value > _configuration.CurrentDate)
+            {
+                return _configuration.StartDate.Value;
+            }
+            return _configuration.CurrentDate;
         }
 
         private DateTime GetFirstActiveDayWeekly()
@@ -123,7 +126,7 @@ namespace Semicrol.Schedule
 
         private DateTime GetFirstActiveDayMonthlyDayType()
         {
-            _validator.ValidateMonthliConfigurationDayType();
+            _validator.ValidateMonthlyConfigurationDayType();
 
             DateTime firstActiveDate = GetFirstActiveDayDaily();
 
@@ -148,7 +151,7 @@ namespace Semicrol.Schedule
     
         private DateTime GetFirstActiveDayMonthlyBiuldType()
         {
-            _validator.ValidateMonthliConfigurationBiuldType();
+            _validator.ValidateMonthlyConfigurationBiuldType();
             
             return GetDayInMonth();
         }
@@ -232,20 +235,20 @@ namespace Semicrol.Schedule
         {
             DateTime lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month));
             int difference = (int)lastDay.DayOfWeek - (int)_configuration.MonthlyWeekDay;
-            return difference > 0 
+            return difference >= 0 
                 ? lastDay.AddDays(-1 * difference) 
                 : lastDay.AddDays(-1 * (7 + difference));
 
         }
 
-        private DateTime? CalculateTime(DateTime day)
+        private DateTime? CalculateTime(DateTime lastOutputDate, DateTime day)
         {
             return _configuration.DailyType == ConfigurationTypes.Once
-                ? GetOnceTime(day)
-                : GetRecurringTime(day);
+                ? GetOnceTime(lastOutputDate, day)
+                : GetRecurringTime(lastOutputDate, day);
         }
 
-        private DateTime? GetOnceTime(DateTime day)
+        private DateTime? GetOnceTime(DateTime lastOutputDate, DateTime day)
         {
             GetValidator().ValidateDailyOnceFrecuency();
             if (lastOutputDate == day) { return null; }
@@ -253,7 +256,7 @@ namespace Semicrol.Schedule
             return day.FullDateTime(_configuration.DailyOnceTime);
         }
 
-        private DateTime? GetRecurringTime(DateTime day)
+        private DateTime? GetRecurringTime(DateTime lastOutputDate, DateTime day)
         {
             GetValidator().ValidateDailyFrecuency();
 
