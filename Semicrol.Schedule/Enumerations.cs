@@ -50,5 +50,12 @@
             WeekDay,
             WeekendDay
         }
+
+        public enum SupportingLanguages
+        {
+            es_ES,
+            en_US,
+            en_GB
+        }
     }
 }

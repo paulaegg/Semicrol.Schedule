@@ -6,10 +6,12 @@ namespace Semicrol.Schedule
     public class Validator
     {
         private readonly Configuration _configuration;
+        private readonly TranslationsManager _translationManager;
 
-        public Validator(Configuration configuration)
+        public Validator(Configuration configuration, TranslationsManager translationManager)
         {
             this._configuration = configuration;
+            this._translationManager = translationManager;
         }
 
         public void ValidateConfiguration()
@@ -22,15 +24,15 @@ namespace Semicrol.Schedule
         {
             if (_configuration.CurrentDate.IsValid() == false)
             {
-                throw new Exception("Current date should be a correct date");
+                throw new Exception(_translationManager.GetText("currentCorrect"));
             }
             if (_configuration.StartDate.HasValue && _configuration.StartDate.Value.IsValid() == false)
             {
-                throw new Exception("Start Date should be a correct date");
+                throw new Exception(_translationManager.GetText("startDateCorrect"));
             }
             if (_configuration.EndDate.HasValue && _configuration.EndDate.Value.IsValid() == false)
             {
-                throw new Exception("End Date should be a correct date");
+                throw new Exception(_translationManager.GetText("endDateCorrect"));
             }
         }
 
@@ -39,7 +41,7 @@ namespace Semicrol.Schedule
             if (_configuration.StartDate.HasValue && _configuration.EndDate.HasValue &&
                _configuration.StartDate.Value > _configuration.EndDate.Value)
             {
-                throw new Exception("End date should be greater than Start date");
+                throw new Exception(_translationManager.GetText("endGreater"));
             }
         }
 
@@ -49,7 +51,7 @@ namespace Semicrol.Schedule
                 (_configuration.OnceExecutionTime.HasValue == false ||
                 _configuration.OnceExecutionTime.Value.IsValid() == false))
             {
-                throw new Exception("If type is Once, you should enter a valid DateTime");
+                throw new Exception(_translationManager.GetText("onceValidation"));
             }
         }
 
@@ -73,11 +75,11 @@ namespace Semicrol.Schedule
 
             if (_configuration.WeeklyPeriodicity <= 0 || _configuration.WeeklyPeriodicity.IsValid() == false)
             {
-                throw new Exception("Weekly periodicity should be a correct number and greater than 0 if configuration occurs weekly");
+                throw new Exception(_translationManager.GetText("weeklyPeriodicityCorrect"));
             }
             if (_configuration.WeeklyActiveDays == null || _configuration.WeeklyActiveDays.Length == 0)
             {
-                throw new Exception("You should select some day of the week if configuration occurs weekly");
+                throw new Exception(_translationManager.GetText("weekDaysSelected"));
             }
         }
 

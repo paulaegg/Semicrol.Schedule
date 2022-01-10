@@ -5,6 +5,7 @@ namespace Semicrol.Schedule
 {
     public class Configuration
     {
+        public SupportingLanguages language { get; set; } = SupportingLanguages.en_GB;
         public DateTime CurrentDate { get; set; }
         public ConfigurationTypes Type { get; set; }
         public bool Enabled { get; set; }

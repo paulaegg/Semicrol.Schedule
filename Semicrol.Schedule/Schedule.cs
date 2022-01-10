@@ -11,6 +11,7 @@ namespace Semicrol.Schedule
     {
         private readonly Configuration _configuration;
         private Validator _validator;
+        private TranslationsManager _translationManager;
 
         public Schedule(Configuration configuration)
         {
@@ -21,16 +22,25 @@ namespace Semicrol.Schedule
         {
             if (_validator == null)
             {
-                _validator = new Validator(_configuration);
+                _validator = new Validator(_configuration, GetTranslationManager());
             }
             return _validator;
+        }
+
+        private TranslationsManager GetTranslationManager()
+        {
+            if (_translationManager == null)
+            {
+                _translationManager = new TranslationsManager(_configuration.language);
+            }
+            return _translationManager;
         }
 
         public OutPut GetNextExecution(DateTime lastOutputDate)
         {
             if (!_configuration.Enabled)
             {
-                return new OutPut() { Description = "The process is disabled" };
+                return new OutPut() { Description = GetTranslationManager().GetText("disabled") };
             }
 
             GetValidator().ValidateConfiguration();

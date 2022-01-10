@@ -16,7 +16,8 @@ namespace Semicrol.Schedule.Test
             {
                 Enabled = true
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action DateValidation = () => validator.DateValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             DateValidation.Should().Throw<Exception>().WithMessage("Current date should be a correct date");
@@ -32,7 +33,8 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = DateTime.Today,
                 StartDate = DateTime.MaxValue
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action DateValidation = () => validator.DateValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             DateValidation.Should().Throw<Exception>().WithMessage("Start Date should be a correct date");
@@ -48,7 +50,8 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = DateTime.Today,
                 EndDate = DateTime.MinValue
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action DateValidation = () => validator.DateValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             DateValidation.Should().Throw<Exception>().WithMessage("End Date should be a correct date");
@@ -66,7 +69,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 10),
                 EndDate = new DateTime(2020, 1, 2)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new TranslationsManager(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action LimitsValidation = () => validator.LimitsValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             LimitsValidation.Should().Throw<Exception>().WithMessage("End date should be greater than Start date");
@@ -83,7 +87,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2021, 1, 31)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             ValidateConfiguration.Should().NotThrow();
         }
@@ -98,7 +103,8 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = new DateTime(2020, 1, 1),
                 OnceExecutionTime = DateTime.MaxValue
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateRequiredConfigurationDate = () => validator.ValidateRequiredConfigurationDate();
             ValidateRequiredConfigurationDate.Should().Throw<Exception>().WithMessage("If type is Once, you should enter a valid DateTime");
         }
@@ -113,7 +119,8 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = new DateTime(2020, 1, 1),
                 OnceExecutionTime = new DateTime(2020, 1, 1)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateRequiredConfigurationDate = () => validator.ValidateRequiredConfigurationDate();
             ValidateRequiredConfigurationDate.Should().NotThrow();
         }
@@ -126,7 +133,8 @@ namespace Semicrol.Schedule.Test
                 Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = int.MinValue
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
             ValidateWeeklyConfiguration.Should().Throw<Exception>().WithMessage("Weekly periodicity should be a correct number and greater than 0 if configuration occurs weekly");
         }
@@ -139,7 +147,8 @@ namespace Semicrol.Schedule.Test
                 Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 25
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
             ValidateWeeklyConfiguration.Should().Throw<Exception>().WithMessage("You should select some day of the week if configuration occurs weekly");
         }
@@ -153,7 +162,8 @@ namespace Semicrol.Schedule.Test
                 WeeklyPeriodicity = 25,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday }
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
             ValidateWeeklyConfiguration.Should().NotThrow();
         }
@@ -166,7 +176,8 @@ namespace Semicrol.Schedule.Test
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 0
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("You should indicate a correct periodicity");
         }
@@ -180,7 +191,8 @@ namespace Semicrol.Schedule.Test
                 DailyPeriodicity = 1,
                 DailyStartTime = new TimeSpan(65, 0, 0)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("Start Daily Frecuency should be a correct time");
         }
@@ -194,7 +206,8 @@ namespace Semicrol.Schedule.Test
                 DailyPeriodicity = 1,
                 DailyEndTime = TimeSpan.Zero
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("End Daily Frecuency should be a correct time distinct of zero");
         }
@@ -207,7 +220,8 @@ namespace Semicrol.Schedule.Test
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 10
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().NotThrow();
         }
@@ -219,7 +233,8 @@ namespace Semicrol.Schedule.Test
             {
                 CurrentDate = new DateTime(2020, 1, 1)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateCorrectDateWithCurrentDate = () => validator.ValidateCorrectDateWithCurrentDate(new DateTime(1993, 1, 15));
             ValidateCorrectDateWithCurrentDate.Should().Throw<Exception>().WithMessage("Next execution time could not be lower than Current date");
         }
@@ -231,7 +246,8 @@ namespace Semicrol.Schedule.Test
             {
                 CurrentDate = new DateTime(2020, 1, 1)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateCorrectDateWithCurrentDate = () => validator.ValidateCorrectDateWithCurrentDate(new DateTime(2021, 1, 15));
             ValidateCorrectDateWithCurrentDate.Should().NotThrow();
         }
@@ -244,7 +260,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 12, 31)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(1993, 1, 15));
             ValidateDateInLimits.Should().Throw<Exception>().WithMessage("The date is out of the limits");
         }
@@ -257,7 +274,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 12, 31)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(2023, 1, 15));
             ValidateDateInLimits.Should().Throw<Exception>().WithMessage("The date is out of the limits");
         }
@@ -270,7 +288,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 12, 31)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(2020, 1, 15));
             ValidateDateInLimits.Should().NotThrow();
         }
@@ -284,7 +303,8 @@ namespace Semicrol.Schedule.Test
                 DailyType = ConfigurationTypes.Once,
                 DailyOnceTime = new TimeSpan(26, 0, 0)
             };
-            Validator validator = new(configuration);
+            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
+            Validator validator = new(configuration, translationManager);
             Action ValidateDailyOnceFrecuency = () => validator.ValidateDailyOnceFrecuency();
             ValidateDailyOnceFrecuency.Should().Throw<Exception>().WithMessage("The interval time in daily frecuency should be lower than 24 hours");
         }
