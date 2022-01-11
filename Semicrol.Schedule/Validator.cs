@@ -6,31 +6,33 @@ namespace Semicrol.Schedule
     public class Validator
     {
         private readonly Configuration _configuration;
+        private ResourceManager _resourceManager;
 
-        public Validator(Configuration configuration)
+        public Validator(Configuration configuration, ResourceManager resourceManager)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
+            _resourceManager = resourceManager;
         }
 
         public void ValidateConfiguration()
         {
-            this.DateValidation();
-            this.LimitsValidation();
+            DateValidation();
+            LimitsValidation();
         }
 
         public void DateValidation()
         {
             if (_configuration.CurrentDate.IsValid() == false)
             {
-                throw new Exception("Current date should be a correct date");
+                throw new Exception(_resourceManager.GetResource("currentCorrect"));
             }
             if (_configuration.StartDate.HasValue && _configuration.StartDate.Value.IsValid() == false)
             {
-                throw new Exception("Start Date should be a correct date");
+                throw new Exception(_resourceManager.GetResource("startCorrect"));
             }
             if (_configuration.EndDate.HasValue && _configuration.EndDate.Value.IsValid() == false)
             {
-                throw new Exception("End Date should be a correct date");
+                throw new Exception(_resourceManager.GetResource("endCorrect"));
             }
         }
 
@@ -39,7 +41,7 @@ namespace Semicrol.Schedule
             if (_configuration.StartDate.HasValue && _configuration.EndDate.HasValue &&
                _configuration.StartDate.Value > _configuration.EndDate.Value)
             {
-                throw new Exception("End date should be greater than Start date");
+                throw new Exception(_resourceManager.GetResource("endGreater"));
             }
         }
 
@@ -49,7 +51,7 @@ namespace Semicrol.Schedule
                 (_configuration.OnceExecutionTime.HasValue == false ||
                 _configuration.OnceExecutionTime.Value.IsValid() == false))
             {
-                throw new Exception("If type is Once, you should enter a valid DateTime");
+                throw new Exception(_resourceManager.GetResource("onceTypeCorrect"));
             }
         }
 
@@ -73,29 +75,29 @@ namespace Semicrol.Schedule
 
             if (_configuration.WeeklyPeriodicity <= 0 || _configuration.WeeklyPeriodicity.IsValid() == false)
             {
-                throw new Exception("Weekly periodicity should be a correct number and greater than 0 if configuration occurs weekly");
+                throw new Exception(_resourceManager.GetResource("weeklyperiodicityValidation"));
             }
             if (_configuration.WeeklyActiveDays == null || _configuration.WeeklyActiveDays.Length == 0)
             {
-                throw new Exception("You should select some day of the week if configuration occurs weekly");
+                throw new Exception(_resourceManager.GetResource("daySelectedWeek"));
             }
         }
-
+        
         public void ValidateDailyFrecuency()
         {
             if (_configuration.DailyType != ConfigurationTypes.Recurring) { return; }
 
             if (_configuration.DailyPeriodicity == 0 || _configuration.DailyPeriodicity.IsValid() == false)
             {
-                throw new Exception("You should indicate a correct periodicity");
+                throw new Exception(_resourceManager.GetResource("periodicityValidation"));
             }
             if (_configuration.DailyStartTime.IsValid() == false)
             {
-                throw new Exception("Start Daily Frecuency should be a correct time");
+                throw new Exception(_resourceManager.GetResource("startFrecuency"));
             }
             if (_configuration.DailyEndTime.IsValid() == false || _configuration.DailyEndTime == TimeSpan.Zero)
             {
-                throw new Exception("End Daily Frecuency should be a correct time distinct of zero");
+                throw new Exception(_resourceManager.GetResource("endFrecuency"));
             }
         }
 
@@ -105,7 +107,7 @@ namespace Semicrol.Schedule
                 _configuration.DailyType == ConfigurationTypes.Once &&
                 _configuration.DailyOnceTime.IsValid() == false)
             {
-                throw new Exception("The interval time in daily frecuency should be lower than 24 hours");
+                throw new Exception(_resourceManager.GetResource("intervalTime"));
             }
         }
 
@@ -113,7 +115,7 @@ namespace Semicrol.Schedule
         {
             if (_configuration.CurrentDate > DateToValidate)
             {
-                throw new Exception("Next execution time could not be lower than Current date");
+                throw new Exception(_resourceManager.GetResource("nextExecution"));
             }
         }
 
@@ -122,7 +124,7 @@ namespace Semicrol.Schedule
             if (_configuration.StartDate > DateToValidate ||
                 _configuration.EndDate < DateToValidate)
             {
-                throw new Exception("The date is out of the limits");
+                throw new Exception(_resourceManager.GetResource("limitsValidation"));
             }
         }
 
@@ -130,7 +132,7 @@ namespace Semicrol.Schedule
         {
             if (_configuration.MonthlyPeriodicity <= 0)
             {
-                throw new Exception("You should enter a valid monthly periodicity");
+                throw new Exception(_resourceManager.GetResource("monthlyPeriodicity"));
             }
         }
 
@@ -145,7 +147,7 @@ namespace Semicrol.Schedule
             if (_configuration.MonthlyDay <= 0 ||
                 _configuration.MonthlyDay > 31)
             {
-                throw new Exception("You should enter a valid day");
+                throw new Exception(_resourceManager.GetResource("validDay"));
             }           
         }
 

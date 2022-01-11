@@ -5,6 +5,7 @@ namespace Semicrol.Schedule
 {
     public class Configuration
     {
+        public SupportedCultures culture { get; set; } = SupportedCultures.en_GB;
         public DateTime CurrentDate { get; set; }
         public ConfigurationTypes Type { get; set; }
         public bool Enabled { get; set; }
@@ -24,7 +25,7 @@ namespace Semicrol.Schedule
         public int DailyPeriodicity { get; set; }
         public TimePeriodicityTypes DailyPeriodicityType { get; set; }
         public TimeSpan DailyStartTime { get; set; }
-        public TimeSpan DailyEndTime { get; set; } = new TimeSpan(23, 59, 58);
+        public TimeSpan DailyEndTime { get; set; } = new TimeSpan(23, 59, 59);
         #endregion
 
         #region Monthly Configuration

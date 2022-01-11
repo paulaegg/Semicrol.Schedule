@@ -9,60 +9,62 @@ namespace Semicrol.Schedule
 {
     public static class Description
     {
-        public static string GetDescription(Configuration configuration, DateTime executionDate)
+        public static string GetDescription(Configuration configuration, ResourceManager resourceManager, DateTime executionDate)
         {
-            StringBuilder text = new StringBuilder("Occurs ");
+            StringBuilder text = new StringBuilder(resourceManager.GetResource("occurs"));
             switch (configuration.Periodcity)   
             {
                 case Enumerations.PeriodicityTypes.Daily:
-                    text.Append(GetDescriptionOcursDaily(configuration));
-                    text.Append(GetDescriptionDaily(configuration, executionDate));
+                    text.Append(GetDescriptionOcursDaily(configuration, resourceManager));
+                    text.Append(GetDescriptionDaily(configuration, resourceManager, executionDate));
                     break;
                 case Enumerations.PeriodicityTypes.Weekly:
-                    text.Append(GetDescriptionWeekly(configuration));
-                    text.Append(GetDailyFrecuencyDescription(configuration));
+                    text.Append(GetDescriptionWeekly(configuration, resourceManager));
+                    text.Append(GetDailyFrecuencyDescription(configuration, resourceManager));
                     break;
                 case Enumerations.PeriodicityTypes.Monthly:
-                    text.Append(GetDescriptionMonthly(configuration));
-                    text.Append(GetDailyFrecuencyDescription(configuration));
+                    text.Append(GetDescriptionMonthly(configuration, resourceManager));
+                    text.Append(GetDailyFrecuencyDescription(configuration, resourceManager));
                     break;
                 default:
                     break;
             }
-            text.Append(GetTextLimits(configuration));
+            text.Append(GetTextLimits(configuration, resourceManager));
             return text.ToString();
         }
 
-        private static string GetDescriptionOcursDaily(Configuration configuration)
+        private static string GetDescriptionOcursDaily(Configuration configuration, ResourceManager resourceManager)
         {
             return configuration.Type == ConfigurationTypes.Recurring
-                ? "every day"
-                : "once";
+                ? resourceManager.GetResource("everyday")
+                : resourceManager.GetResource("once");
         }
 
-        private static string GetDescriptionDaily(Configuration configuration, DateTime executionDate)
+        private static string GetDescriptionDaily(Configuration configuration, ResourceManager resourceManager, DateTime executionDate)
         {
             if (configuration.DailyType == ConfigurationTypes.Once)
             {
                 if (configuration.Type == ConfigurationTypes.Recurring)
                 {
-                    return $" at {configuration.DailyOnceTime}";
+                    return $" {resourceManager.GetResource("at")} {configuration.DailyOnceTime}";
                 }
 
-                return $". Schedule will be used on {executionDate.ToShortDateString()} at {executionDate.ToShortTimeString()}";
+                return $"{resourceManager.GetResource("usedon")} {executionDate.ToShortDateString()} {resourceManager.GetResource("at")} {executionDate.ToShortTimeString()}";
             }
-            return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
-               $"{configuration.DailyStartTime} and {configuration.DailyEndTime}";
+            return $" {resourceManager.GetResource("every")} {configuration.DailyPeriodicity} {resourceManager.GetTimePeriodicityTranslated(configuration.DailyPeriodicityType)} {resourceManager.GetResource("between")} " +
+               $"{configuration.DailyStartTime} {resourceManager.GetResource("and")} {configuration.DailyEndTime}";
 
         }
 
-        private static string GetDescriptionWeekly(Configuration configuration)
+        private static string GetDescriptionWeekly(Configuration configuration, ResourceManager resourceManager)
         {
-            string weekText = configuration.WeeklyPeriodicity == 1 ? "week" : "weeks";
-            return $"every {configuration.WeeklyPeriodicity} {weekText} on {GetTextWeekDays(configuration)}";
+            string weekText = configuration.WeeklyPeriodicity == 1
+                ? resourceManager.GetResource("week")
+                : resourceManager.GetResource("weeks");
+            return $"{resourceManager.GetResource("every")} {configuration.WeeklyPeriodicity} {weekText} {resourceManager.GetResource("on")} {GetTextWeekDays(configuration, resourceManager)}";
         }
 
-        private static string GetTextWeekDays(Configuration configuration)
+        private static string GetTextWeekDays(Configuration configuration, ResourceManager resourceManager)
         {
             if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
 
@@ -71,34 +73,34 @@ namespace Semicrol.Schedule
 
             for (int index = 1; index < configuration.WeeklyActiveDays.Length - 1; index++)
             {
-                text.Append(", " + configuration.WeeklyActiveDays[index].ToString());
+                text.Append(resourceManager.GetResource(",") + configuration.WeeklyActiveDays[index].ToString());
             }
-            text.Append(" and " + configuration.WeeklyActiveDays.Last().ToString());
+            text.Append(" " + resourceManager.GetResource("and") + " " + configuration.WeeklyActiveDays.Last().ToString());
             return text.ToString();
         }
 
-        private static string GetDescriptionMonthly(Configuration configuration)
+        private static string GetDescriptionMonthly(Configuration configuration, ResourceManager resourceManager)
         {
             if (configuration.MonthlyType == MonthlyTypes.Day)
             {
-                return $"the days {configuration.MonthlyDay} every {configuration.MonthlyPeriodicity} months";
+                return $"{resourceManager.GetResource("thedays")} {configuration.MonthlyDay} {resourceManager.GetResource("every")} {configuration.MonthlyPeriodicity} {resourceManager.GetResource("months")}";
             }
-            return $"the {configuration.MonthlyOrdinalPeriodicity} {configuration.MonthlyWeekDay} of every {configuration.MonthlyPeriodicity} months";
+            return $"{resourceManager.GetResource("the")} {resourceManager.GetOrdinalPeriodicityTranslated(configuration.MonthlyOrdinalPeriodicity)} {resourceManager.GetWeekDaysTranslated(configuration.MonthlyWeekDay)} {resourceManager.GetResource("ofevery")} {configuration.MonthlyPeriodicity} {resourceManager.GetResource("months")}";
         }
 
-        private static string GetDailyFrecuencyDescription(Configuration configuration)
+        private static string GetDailyFrecuencyDescription(Configuration configuration, ResourceManager resourceManager)
         {
             if (configuration.DailyType == ConfigurationTypes.Once)
             {
-                return $" at {configuration.DailyOnceTime}";
+                return $" {resourceManager.GetResource("at")} {configuration.DailyOnceTime}";
             }
-            return $" every {configuration.DailyPeriodicity} {configuration.DailyPeriodicityType} between " +
-                $"{configuration.DailyStartTime} and {configuration.DailyEndTime}";
+            return $" {resourceManager.GetResource("every")} {configuration.DailyPeriodicity} {resourceManager.GetTimePeriodicityTranslated(configuration.DailyPeriodicityType)} between " +
+                $"{configuration.DailyStartTime} {resourceManager.GetResource("and")} {configuration.DailyEndTime}";
         }
 
 
         #region Limits text
-        private static string GetTextLimits(Configuration configuration)
+        private static string GetTextLimits(Configuration configuration, ResourceManager resourceManager)
         {
             if (!configuration.StartDate.HasValue &&
                 !configuration.EndDate.HasValue)
@@ -106,9 +108,9 @@ namespace Semicrol.Schedule
                 return string.Empty;
             }
             StringBuilder text = new StringBuilder(" ");
-            text.Append(GetTextStarLimit(configuration));
-            text.Append(CheckHasBothLimits(configuration) ? " and " : string.Empty);
-            text.Append(GetTextEndLimit(configuration));
+            text.Append(GetTextStarLimit(configuration, resourceManager));
+            text.Append(CheckHasBothLimits(configuration) ? " "+ resourceManager.GetResource("and") +" " : string.Empty);
+            text.Append(GetTextEndLimit(configuration, resourceManager));
 
             return text.ToString();
         }
@@ -119,17 +121,17 @@ namespace Semicrol.Schedule
                    configuration.EndDate.HasValue;
         }
 
-        private static string GetTextStarLimit(Configuration configuration)
+        private static string GetTextStarLimit(Configuration configuration, ResourceManager resourceManager)
         {
             return configuration.StartDate.HasValue
-                ? $"starting on {configuration.StartDate.Value.ToShortDateString()}"
+                ? $"{resourceManager.GetResource("startingon")} {configuration.StartDate.Value.ToShortDateString()}"
                 : string.Empty;
         }
 
-        private static string GetTextEndLimit(Configuration configuration)
+        private static string GetTextEndLimit(Configuration configuration, ResourceManager resourceManager)
         {
             return configuration.EndDate.HasValue
-                ? $"ending on { configuration.EndDate.Value.ToShortDateString()}"
+                ? $"{resourceManager.GetResource("endingon")} { configuration.EndDate.Value.ToShortDateString()}"
                 : string.Empty;
         }
         #endregion

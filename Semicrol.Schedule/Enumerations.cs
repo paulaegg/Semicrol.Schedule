@@ -50,5 +50,12 @@
             WeekDay,
             WeekendDay
         }
+
+        public enum SupportedCultures
+        {
+            en_GB,
+            en_US,
+            es_ES
+        }
     }
 }
