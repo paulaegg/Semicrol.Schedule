@@ -38,7 +38,7 @@ namespace Semicrol.Schedule
                 _resources.Add("startFrecuency", "La frecuencia diaria de inicio debe ser una hora correcta");
                 _resources.Add("endFrecuency", "La frecuencia diaria final debe ser una hora correcta distinta de cero");
                 _resources.Add("intervalTime", "El tiempo de intervalo en la frecuencia diaria debe ser inferior a 24 horas");
-                _resources.Add("nextExecution", "La siguiente hora de ejecución no puede ser inferior a la fecha actual.");
+                _resources.Add("nextExecution", "La siguiente hora de ejecución no puede ser inferior a la fecha actual");
                 _resources.Add("limitsValidation", "La fecha está fuera de los límites");
                 _resources.Add("monthlyPeriodicity", "Debe introducir una periodicidad mensual válida");
                 _resources.Add("validDay", "Debe introducir un día válido");
@@ -55,7 +55,7 @@ namespace Semicrol.Schedule
                 _resources.Add("and", "y");
                 _resources.Add("week", "semana");
                 _resources.Add("weeks", "semanas");
-                _resources.Add("on", "en");
+                _resources.Add("on", "los");
                 _resources.Add(",", ", ");
                 _resources.Add("thedays", "los días");
                 _resources.Add("months", "meses");
@@ -74,16 +74,16 @@ namespace Semicrol.Schedule
                 #endregion
 
                 #region AvailableWeekDays
-                _resources.Add("Monday", "lunes");
-                _resources.Add("Tuesday", "martes");
-                _resources.Add("Wednesday", "miércoles");
-                _resources.Add("Thursday", "jueves");
-                _resources.Add("Friday", "viernes");
-                _resources.Add("Saturday", "sábado");
-                _resources.Add("Sunday", "domingo");
-                _resources.Add("Day", "día");
-                _resources.Add("WeekDay", "día de la semana");
-                _resources.Add("WeekendDay", "fin de semana");
+                _resources.Add("monday", "lunes");
+                _resources.Add("tuesday", "martes");
+                _resources.Add("wednesday", "miércoles");
+                _resources.Add("thursday", "jueves");
+                _resources.Add("friday", "viernes");
+                _resources.Add("saturday", "sábado");
+                _resources.Add("sunday", "domingo");
+                _resources.Add("day", "día");
+                _resources.Add("weekDay", "día de la semana");
+                _resources.Add("weekendDay", "fin de semana");
                 #endregion
 
                 #region TimePeriodicityTypes
@@ -146,16 +146,16 @@ namespace Semicrol.Schedule
             #endregion
 
             #region AvailableWeekDays
-            _resources.Add("Monday", "Monday");
-            _resources.Add("Tuesday", "Tuesday");
-            _resources.Add("Wednesday", "Wednesday");
-            _resources.Add("Thursday", "Thursday");
-            _resources.Add("Friday", "Friday");
-            _resources.Add("Saturday", "Saturday");
-            _resources.Add("Sunday", "Sunday");
-            _resources.Add("Day", "Day");
-            _resources.Add("WeekDay", "WeekDay");
-            _resources.Add("WeekendDay", "WeekendDay");
+            _resources.Add("monday", "Monday");
+            _resources.Add("tuesday", "Tuesday");
+            _resources.Add("wednesday", "Wednesday");
+            _resources.Add("thursday", "Thursday");
+            _resources.Add("friday", "Friday");
+            _resources.Add("saturday", "Saturday");
+            _resources.Add("sunday", "Sunday");
+            _resources.Add("day", "Day");
+            _resources.Add("weekDay", "WeekDay");
+            _resources.Add("weekendDay", "WeekendDay");
             #endregion
 
             #region TimePeriodicityTypes
@@ -219,6 +219,29 @@ namespace Semicrol.Schedule
             }            
         }
 
+        public string GetWeekDaysTranslated(DayOfWeek weekDay)
+        {
+            switch (weekDay)
+            {
+                case DayOfWeek.Monday:
+                    return GetResource("monday");
+                case DayOfWeek.Tuesday:
+                    return GetResource("tuesday");
+                case DayOfWeek.Wednesday:
+                    return GetResource("wednesday");
+                case DayOfWeek.Thursday:
+                    return GetResource("thursday");
+                case DayOfWeek.Friday:
+                    return GetResource("friday");
+                case DayOfWeek.Saturday:
+                    return GetResource("saturday");
+                case DayOfWeek.Sunday:
+                    return GetResource("sunday");
+                default:
+                    return string.Empty;
+            }
+        }
+
         public string GetTimePeriodicityTranslated(TimePeriodicityTypes periodicity)
         {
             switch (periodicity)
@@ -234,5 +257,19 @@ namespace Semicrol.Schedule
             }
         }
 
+        public string GetFormattedDate(DateTime date)
+        {
+            return date.ToString("d", _culture);
+        }
+
+        public string GetFormattedTime(TimeSpan time)
+        {
+            return time.ToString("t", _culture);
+        }
+
+        public string GetFormattedTime(DateTime date)
+        {
+            return date.ToString("t", _culture);
+        }
     }
 }

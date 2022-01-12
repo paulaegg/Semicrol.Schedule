@@ -46,13 +46,13 @@ namespace Semicrol.Schedule
             {
                 if (configuration.Type == ConfigurationTypes.Recurring)
                 {
-                    return $" {resourceManager.GetResource("at")} {configuration.DailyOnceTime}";
+                    return $" {resourceManager.GetResource("at")} {resourceManager.GetFormattedTime(configuration.DailyOnceTime)}";
                 }
 
-                return $"{resourceManager.GetResource("usedon")} {executionDate.ToShortDateString()} {resourceManager.GetResource("at")} {executionDate.ToShortTimeString()}";
+                return $"{resourceManager.GetResource("usedon")} {resourceManager.GetFormattedDate(executionDate)} {resourceManager.GetResource("at")} {resourceManager.GetFormattedTime(executionDate.TimeOfDay)}";
             }
             return $" {resourceManager.GetResource("every")} {configuration.DailyPeriodicity} {resourceManager.GetTimePeriodicityTranslated(configuration.DailyPeriodicityType)} {resourceManager.GetResource("between")} " +
-               $"{configuration.DailyStartTime} {resourceManager.GetResource("and")} {configuration.DailyEndTime}";
+               $"{resourceManager.GetFormattedTime(configuration.DailyStartTime)} {resourceManager.GetResource("and")} {resourceManager.GetFormattedTime(configuration.DailyEndTime)}";
 
         }
 
@@ -68,14 +68,14 @@ namespace Semicrol.Schedule
         {
             if (configuration.WeeklyActiveDays.Length == 0) { return string.Empty; }
 
-            StringBuilder text = new StringBuilder(configuration.WeeklyActiveDays.First().ToString());
+            StringBuilder text = new StringBuilder(resourceManager.GetWeekDaysTranslated(configuration.WeeklyActiveDays.First()));
             if (configuration.WeeklyActiveDays.Length == 1) { return text.ToString(); }
 
             for (int index = 1; index < configuration.WeeklyActiveDays.Length - 1; index++)
             {
-                text.Append(resourceManager.GetResource(",") + configuration.WeeklyActiveDays[index].ToString());
+                text.Append(resourceManager.GetResource(",") + (resourceManager.GetWeekDaysTranslated(configuration.WeeklyActiveDays[index])));
             }
-            text.Append(" " + resourceManager.GetResource("and") + " " + configuration.WeeklyActiveDays.Last().ToString());
+            text.Append(" " + resourceManager.GetResource("and") + " " + resourceManager.GetWeekDaysTranslated(configuration.WeeklyActiveDays.Last()));
             return text.ToString();
         }
 
@@ -92,10 +92,10 @@ namespace Semicrol.Schedule
         {
             if (configuration.DailyType == ConfigurationTypes.Once)
             {
-                return $" {resourceManager.GetResource("at")} {configuration.DailyOnceTime}";
+                return $" {resourceManager.GetResource("at")} {resourceManager.GetFormattedTime(configuration.DailyOnceTime)}";
             }
-            return $" {resourceManager.GetResource("every")} {configuration.DailyPeriodicity} {resourceManager.GetTimePeriodicityTranslated(configuration.DailyPeriodicityType)} between " +
-                $"{configuration.DailyStartTime} {resourceManager.GetResource("and")} {configuration.DailyEndTime}";
+            return $" {resourceManager.GetResource("every")} {configuration.DailyPeriodicity} {resourceManager.GetTimePeriodicityTranslated(configuration.DailyPeriodicityType)} {resourceManager.GetResource("between")} " +
+                $"{resourceManager.GetFormattedTime(configuration.DailyStartTime)} {resourceManager.GetResource("and")} {resourceManager.GetFormattedTime(configuration.DailyEndTime)}";
         }
 
 
@@ -124,14 +124,14 @@ namespace Semicrol.Schedule
         private static string GetTextStarLimit(Configuration configuration, ResourceManager resourceManager)
         {
             return configuration.StartDate.HasValue
-                ? $"{resourceManager.GetResource("startingon")} {configuration.StartDate.Value.ToShortDateString()}"
+                ? $"{resourceManager.GetResource("startingon")} {resourceManager.GetFormattedDate(configuration.StartDate.Value)}"
                 : string.Empty;
         }
 
         private static string GetTextEndLimit(Configuration configuration, ResourceManager resourceManager)
         {
             return configuration.EndDate.HasValue
-                ? $"{resourceManager.GetResource("endingon")} { configuration.EndDate.Value.ToShortDateString()}"
+                ? $"{resourceManager.GetResource("endingon")} {resourceManager.GetFormattedDate(configuration.EndDate.Value)}"
                 : string.Empty;
         }
         #endregion

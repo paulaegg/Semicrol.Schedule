@@ -5,7 +5,7 @@ namespace Semicrol.Schedule
 {
     public class Configuration
     {
-        public SupportedCultures culture { get; set; } = SupportedCultures.en_GB;
+        public SupportedCultures Culture { get; set; } = SupportedCultures.en_GB;
         public DateTime CurrentDate { get; set; }
         public ConfigurationTypes Type { get; set; }
         public bool Enabled { get; set; }

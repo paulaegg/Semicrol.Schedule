@@ -33,7 +33,7 @@ namespace Semicrol.Schedule
             {
                 _resourceManager = _configuration == null
                     ? new ResourceManager(SupportedCultures.en_GB)
-                    : new ResourceManager(_configuration.culture);
+                    : new ResourceManager(_configuration.Culture);
             }
             return _resourceManager;
         }
