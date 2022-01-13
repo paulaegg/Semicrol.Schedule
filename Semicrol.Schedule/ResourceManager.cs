@@ -267,10 +267,5 @@ namespace Semicrol.Schedule
         {
             return time.ToString("t", _culture);
         }
-
-        public string GetFormattedTime(DateTime date)
-        {
-            return date.ToString("t", _culture);
-        }
     }
 }
