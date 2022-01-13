@@ -16,12 +16,28 @@ namespace Semicrol.Schedule.Test
             {
                 Enabled = true
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action DateValidation = () => validator.DateValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             DateValidation.Should().Throw<Exception>().WithMessage("Current date should be a correct date");
             ValidateConfiguration.Should().Throw<Exception>().WithMessage("Current date should be a correct date");
+        }
+
+        [Fact]
+        public void Validator_Date_Validation_Current_Date_es()
+        {
+            Configuration configuration = new()
+            {
+                Culture = SupportedCultures.es_ES,
+                Enabled = true
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action DateValidation = () => validator.DateValidation();
+            Action ValidateConfiguration = () => validator.ValidateConfiguration();
+            DateValidation.Should().Throw<Exception>().WithMessage("La fecha actual debe ser una fecha correcta");
+            ValidateConfiguration.Should().Throw<Exception>().WithMessage("La fecha actual debe ser una fecha correcta");
         }
 
         [Fact]
@@ -33,12 +49,29 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = DateTime.Today,
                 StartDate = DateTime.MaxValue
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action DateValidation = () => validator.DateValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             DateValidation.Should().Throw<Exception>().WithMessage("Start Date should be a correct date");
             ValidateConfiguration.Should().Throw<Exception>().WithMessage("Start Date should be a correct date");
+        }
+
+        [Fact]
+        public void Validator_Date_Validation_Start_Date_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                CurrentDate = DateTime.Today,
+                StartDate = DateTime.MaxValue
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action DateValidation = () => validator.DateValidation();
+            Action ValidateConfiguration = () => validator.ValidateConfiguration();
+            DateValidation.Should().Throw<Exception>().WithMessage("La fecha de inicio debe ser una fecha correcta");
+            ValidateConfiguration.Should().Throw<Exception>().WithMessage("La fecha de inicio debe ser una fecha correcta");
         }
 
         [Fact]
@@ -50,12 +83,29 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = DateTime.Today,
                 EndDate = DateTime.MinValue
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action DateValidation = () => validator.DateValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             DateValidation.Should().Throw<Exception>().WithMessage("End Date should be a correct date");
             ValidateConfiguration.Should().Throw<Exception>().WithMessage("End Date should be a correct date");
+        }
+
+        [Fact]
+        public void Validator_Date_Validation_End_Date_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                CurrentDate = DateTime.Today,
+                EndDate = DateTime.MinValue
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action DateValidation = () => validator.DateValidation();
+            Action ValidateConfiguration = () => validator.ValidateConfiguration();
+            DateValidation.Should().Throw<Exception>().WithMessage("La fecha de fin debe ser una fecha correcta");
+            ValidateConfiguration.Should().Throw<Exception>().WithMessage("La fecha de fin debe ser una fecha correcta");
         }
 
         [Fact]
@@ -69,12 +119,31 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 10),
                 EndDate = new DateTime(2020, 1, 2)
             };
-            TranslationsManager translationManager = new TranslationsManager(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action LimitsValidation = () => validator.LimitsValidation();
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             LimitsValidation.Should().Throw<Exception>().WithMessage("End date should be greater than Start date");
             ValidateConfiguration.Should().Throw<Exception>().WithMessage("End date should be greater than Start date");
+        }
+
+        [Fact]
+        public void Validator_Limits_Validation_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                CurrentDate = new DateTime(2020, 1, 1),
+                OnceExecutionTime = new DateTime(2020, 1, 3),
+                StartDate = new DateTime(2020, 1, 10),
+                EndDate = new DateTime(2020, 1, 2)
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action LimitsValidation = () => validator.LimitsValidation();
+            Action ValidateConfiguration = () => validator.ValidateConfiguration();
+            LimitsValidation.Should().Throw<Exception>().WithMessage("La fecha de fin debe ser mayor que la de inicio");
+            ValidateConfiguration.Should().Throw<Exception>().WithMessage("La fecha de fin debe ser mayor que la de inicio");
         }
 
         [Fact]
@@ -87,8 +156,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2021, 1, 31)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateConfiguration = () => validator.ValidateConfiguration();
             ValidateConfiguration.Should().NotThrow();
         }
@@ -103,10 +172,27 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = new DateTime(2020, 1, 1),
                 OnceExecutionTime = DateTime.MaxValue
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateRequiredConfigurationDate = () => validator.ValidateRequiredConfigurationDate();
             ValidateRequiredConfigurationDate.Should().Throw<Exception>().WithMessage("If type is Once, you should enter a valid DateTime");
+        }
+
+
+        [Fact]
+        public void Validator_Required_Configuration_Date_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Type = ConfigurationTypes.Once,
+                CurrentDate = new DateTime(2020, 1, 1),
+                OnceExecutionTime = DateTime.MaxValue
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateRequiredConfigurationDate = () => validator.ValidateRequiredConfigurationDate();
+            ValidateRequiredConfigurationDate.Should().Throw<Exception>().WithMessage("Si el tipo es 'una vez', debe introducir una fecha actual válida");
         }
 
         [Fact]
@@ -119,8 +205,8 @@ namespace Semicrol.Schedule.Test
                 CurrentDate = new DateTime(2020, 1, 1),
                 OnceExecutionTime = new DateTime(2020, 1, 1)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateRequiredConfigurationDate = () => validator.ValidateRequiredConfigurationDate();
             ValidateRequiredConfigurationDate.Should().NotThrow();
         }
@@ -133,10 +219,24 @@ namespace Semicrol.Schedule.Test
                 Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = int.MinValue
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
             ValidateWeeklyConfiguration.Should().Throw<Exception>().WithMessage("Weekly periodicity should be a correct number and greater than 0 if configuration occurs weekly");
+        }
+
+        [Fact]
+        public void Validator_Weekly_Configuration_Periodicity_es()
+        {
+            Configuration configuration = new()
+            {
+                Periodcity = PeriodicityTypes.Weekly,
+                WeeklyPeriodicity = int.MinValue
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
+            ValidateWeeklyConfiguration.Should().Throw<Exception>().WithMessage("La periodicidad semanal debe ser un número correcto y mayor que 0 si la configuración es semanal");
         }
 
         [Fact]
@@ -147,10 +247,24 @@ namespace Semicrol.Schedule.Test
                 Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 25
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
             ValidateWeeklyConfiguration.Should().Throw<Exception>().WithMessage("You should select some day of the week if configuration occurs weekly");
+        }
+
+        [Fact]
+        public void Validator_Weekly_Configuration_Active_Days_es()
+        {
+            Configuration configuration = new()
+            {
+                Periodcity = PeriodicityTypes.Weekly,
+                WeeklyPeriodicity = 25
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
+            ValidateWeeklyConfiguration.Should().Throw<Exception>().WithMessage("Debe seleccionar algún día de la semana si la configuración es semanal");
         }
 
         [Fact]
@@ -162,8 +276,8 @@ namespace Semicrol.Schedule.Test
                 WeeklyPeriodicity = 25,
                 WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday }
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateWeeklyConfiguration = () => validator.ValidateWeeklyConfiguration();
             ValidateWeeklyConfiguration.Should().NotThrow();
         }
@@ -176,10 +290,24 @@ namespace Semicrol.Schedule.Test
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 0
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("You should indicate a correct periodicity");
+        }
+
+        [Fact]
+        public void Validator_Daily_Frecuency_Incorrect_Periodicity_es()
+        {
+            Configuration configuration = new()
+            {
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 0
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
+            ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("Debe indicar una periodicidad correcta");
         }
 
         [Fact]
@@ -191,10 +319,25 @@ namespace Semicrol.Schedule.Test
                 DailyPeriodicity = 1,
                 DailyStartTime = new TimeSpan(65, 0, 0)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("Start Daily Frecuency should be a correct time");
+        }
+
+        [Fact]
+        public void Validator_Daily_Frecuency_Incorrect_Start_Time_es()
+        {
+            Configuration configuration = new()
+            {
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 1,
+                DailyStartTime = new TimeSpan(65, 0, 0)
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
+            ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("La frecuencia diaria de inicio debe ser una hora correcta");
         }
 
         [Fact]
@@ -206,10 +349,25 @@ namespace Semicrol.Schedule.Test
                 DailyPeriodicity = 1,
                 DailyEndTime = TimeSpan.Zero
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("End Daily Frecuency should be a correct time distinct of zero");
+        }
+
+        [Fact]
+        public void Validator_Daily_Frecuency_Incorrect_End_Time_es()
+        {
+            Configuration configuration = new()
+            {
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 1,
+                DailyEndTime = TimeSpan.Zero
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
+            ValidateDailyFrecuency.Should().Throw<Exception>().WithMessage("La frecuencia diaria final debe ser una hora correcta distinta de cero");
         }
 
         [Fact]
@@ -220,8 +378,8 @@ namespace Semicrol.Schedule.Test
                 DailyType = ConfigurationTypes.Recurring,
                 DailyPeriodicity = 10
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDailyFrecuency = () => validator.ValidateDailyFrecuency();
             ValidateDailyFrecuency.Should().NotThrow();
         }
@@ -233,10 +391,23 @@ namespace Semicrol.Schedule.Test
             {
                 CurrentDate = new DateTime(2020, 1, 1)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateCorrectDateWithCurrentDate = () => validator.ValidateCorrectDateWithCurrentDate(new DateTime(1993, 1, 15));
             ValidateCorrectDateWithCurrentDate.Should().Throw<Exception>().WithMessage("Next execution time could not be lower than Current date");
+        }
+
+        [Fact]
+        public void Validator_Correct_Date_With_Current_Date_es()
+        {
+            Configuration configuration = new()
+            {
+                CurrentDate = new DateTime(2020, 1, 1)
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateCorrectDateWithCurrentDate = () => validator.ValidateCorrectDateWithCurrentDate(new DateTime(1993, 1, 15));
+            ValidateCorrectDateWithCurrentDate.Should().Throw<Exception>().WithMessage("La siguiente hora de ejecución no puede ser inferior a la fecha actual");
         }
 
         [Fact]
@@ -246,8 +417,8 @@ namespace Semicrol.Schedule.Test
             {
                 CurrentDate = new DateTime(2020, 1, 1)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateCorrectDateWithCurrentDate = () => validator.ValidateCorrectDateWithCurrentDate(new DateTime(2021, 1, 15));
             ValidateCorrectDateWithCurrentDate.Should().NotThrow();
         }
@@ -260,10 +431,24 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 12, 31)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(1993, 1, 15));
             ValidateDateInLimits.Should().Throw<Exception>().WithMessage("The date is out of the limits");
+        }
+
+        [Fact]
+        public void Validator_Date_In_Limits_Lower_es()
+        {
+            Configuration configuration = new()
+            {
+                StartDate = new DateTime(2020, 1, 1),
+                EndDate = new DateTime(2020, 12, 31)
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(1993, 1, 15));
+            ValidateDateInLimits.Should().Throw<Exception>().WithMessage("La fecha está fuera de los límites");
         }
 
         [Fact]
@@ -274,10 +459,25 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 12, 31)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(2023, 1, 15));
             ValidateDateInLimits.Should().Throw<Exception>().WithMessage("The date is out of the limits");
+        }
+
+
+        [Fact]
+        public void Validator_Date_In_Limits_Greater_es()
+        {
+            Configuration configuration = new()
+            {
+                StartDate = new DateTime(2020, 1, 1),
+                EndDate = new DateTime(2020, 12, 31)
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(2023, 1, 15));
+            ValidateDateInLimits.Should().Throw<Exception>().WithMessage("La fecha está fuera de los límites");
         }
 
         [Fact]
@@ -288,8 +488,8 @@ namespace Semicrol.Schedule.Test
                 StartDate = new DateTime(2020, 1, 1),
                 EndDate = new DateTime(2020, 12, 31)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDateInLimits = () => validator.ValidateDateInLimits(new DateTime(2020, 1, 15));
             ValidateDateInLimits.Should().NotThrow();
         }
@@ -303,10 +503,25 @@ namespace Semicrol.Schedule.Test
                 DailyType = ConfigurationTypes.Once,
                 DailyOnceTime = new TimeSpan(26, 0, 0)
             };
-            TranslationsManager translationManager = new(SupportingLanguages.en_GB);
-            Validator validator = new(configuration, translationManager);
+            ResourceManager resourceManager = new(SupportedCultures.en_GB);
+            Validator validator = new(configuration, resourceManager);
             Action ValidateDailyOnceFrecuency = () => validator.ValidateDailyOnceFrecuency();
             ValidateDailyOnceFrecuency.Should().Throw<Exception>().WithMessage("The interval time in daily frecuency should be lower than 24 hours");
+        }
+
+        [Fact]
+        public void Validator_Daily_Once_Frecuency_es()
+        {
+            Configuration configuration = new()
+            {
+                Type = ConfigurationTypes.Recurring,
+                DailyType = ConfigurationTypes.Once,
+                DailyOnceTime = new TimeSpan(26, 0, 0)
+            };
+            ResourceManager resourceManager = new(SupportedCultures.es_ES);
+            Validator validator = new(configuration, resourceManager);
+            Action ValidateDailyOnceFrecuency = () => validator.ValidateDailyOnceFrecuency();
+            ValidateDailyOnceFrecuency.Should().Throw<Exception>().WithMessage("El tiempo de intervalo en la frecuencia diaria debe ser inferior a 24 horas");
         }
 
         [Fact]
@@ -328,6 +543,25 @@ namespace Semicrol.Schedule.Test
         }
 
         [Fact]
+        public void Validate_Monthly_Configuration_Periodicity_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = DateTime.Today,
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 1,
+                MonthlyPeriodicity = -1
+            };
+            Schedule Schedule = new(configuration);
+            Action GetNextExecution = () => Schedule.CalculateSerie(1);
+            GetNextExecution.Should().Throw<Exception>().WithMessage("Debe introducir una periodicidad mensual válida");
+        }
+
+        [Fact]
         public void Validate_Monthly_Configuration()
         {
             Configuration configuration = new()
@@ -343,6 +577,25 @@ namespace Semicrol.Schedule.Test
             Schedule Schedule = new(configuration);
             Action GetNextExecution = () => Schedule.CalculateSerie(1);
             GetNextExecution.Should().Throw<Exception>().WithMessage("You should enter a valid day");
+        }
+
+        [Fact]
+        public void Validate_Monthly_Configuration_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = DateTime.Today,
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 55,
+                MonthlyPeriodicity = 1
+            };
+            Schedule Schedule = new(configuration);
+            Action GetNextExecution = () => Schedule.CalculateSerie(1);
+            GetNextExecution.Should().Throw<Exception>().WithMessage("Debe introducir un día válido");
         }
 
         #endregion
@@ -361,12 +614,26 @@ namespace Semicrol.Schedule.Test
         {
             Configuration configuration = new()
             {
-                Enabled = false,
+                Enabled = false
             };
 
             Schedule Schedule = new(configuration);
             var result = Schedule.CalculateSerie(1);
             result[0].Description.Should().Be("The process is disabled");
+        }
+
+        [Fact]
+        public void Disabled_Configuration_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = false,
+                Culture = SupportedCultures.es_ES
+            };
+
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(1);
+            result[0].Description.Should().Be("El proceso está desactivado");
         }
 
         [Fact]
@@ -381,6 +648,21 @@ namespace Semicrol.Schedule.Test
             Schedule Schedule = new(configuration);
             Action GetNextExecution = () => Schedule.CalculateSerie(1);
             GetNextExecution.Should().Throw<Exception>().WithMessage("Current date should be a correct date");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Incorrect_Current_Date_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Once,
+                CurrentDate = DateTime.MinValue
+            };
+            Schedule Schedule = new(configuration);
+            Action GetNextExecution = () => Schedule.CalculateSerie(1);
+            GetNextExecution.Should().Throw<Exception>().WithMessage("La fecha actual debe ser una fecha correcta");
         }
 
         [Fact]
@@ -470,6 +752,7 @@ namespace Semicrol.Schedule.Test
             Configuration configuration = new()
             {
                 Enabled = true,
+                Culture = SupportedCultures.en_GB,
                 Type = ConfigurationTypes.Once,
                 CurrentDate = new DateTime(2020, 1, 1),
                 OnceExecutionTime = new DateTime(2020, 1, 3),
@@ -481,7 +764,49 @@ namespace Semicrol.Schedule.Test
 
             result.Length.Should().Be(1);
             result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3));
-            result[0].Description.Should().Be("Occurs once. Schedule will be used on 03/01/2020 at 0:00 starting on 02/01/2020 and ending on 10/01/2020");
+            result[0].Description.Should().Be("Occurs once. Schedule will be used on 03/01/2020 at 00:00:00 starting on 02/01/2020 and ending on 10/01/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Once_Type_Correct_us()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.en_US,
+                Type = ConfigurationTypes.Once,
+                CurrentDate = new DateTime(2020, 1, 1),
+                OnceExecutionTime = new DateTime(2020, 1, 3),
+                StartDate = new DateTime(2020, 1, 2),
+                EndDate = new DateTime(2020, 1, 10)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(1);
+
+            result.Length.Should().Be(1);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3));
+            result[0].Description.Should().Be("Occurs once. Schedule will be used on 1/3/2020 at 00:00:00 starting on 1/2/2020 and ending on 1/10/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Once_Type_Correct_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Once,
+                CurrentDate = new DateTime(2020, 1, 1),
+                OnceExecutionTime = new DateTime(2020, 1, 3),
+                StartDate = new DateTime(2020, 1, 2),
+                EndDate = new DateTime(2020, 1, 10)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(1);
+
+            result.Length.Should().Be(1);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3));
+            result[0].Description.Should().Be("Se produce una vez. El calendario se utilizará el 03/01/2020 a las 00:00:00 empezando el 02/01/2020 y terminando el 10/01/2020");
         }
 
         [Fact]
@@ -501,7 +826,7 @@ namespace Semicrol.Schedule.Test
 
             result.Length.Should().Be(1);
             result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 29));
-            result[0].Description.Should().Be("Occurs once. Schedule will be used on 29/02/2020 at 0:00 starting on 02/01/2020 and ending on 01/03/2020");
+            result[0].Description.Should().Be("Occurs once. Schedule will be used on 29/02/2020 at 00:00:00 starting on 02/01/2020 and ending on 01/03/2020");
         }
 
         #endregion
@@ -531,6 +856,7 @@ namespace Semicrol.Schedule.Test
             Configuration configuration = new()
             {
                 Enabled = true,
+                Culture = SupportedCultures.en_GB,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
                 Periodcity = PeriodicityTypes.Daily,
@@ -546,6 +872,55 @@ namespace Semicrol.Schedule.Test
             result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 2, 0, 0));
 
             result[0].Description.Should().Be(@"Occurs every day at 02:00:00");
+        }
+
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Daily_Once_Correct_us()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.en_US,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Daily,
+                DailyType = ConfigurationTypes.Once,
+                DailyOnceTime = new TimeSpan(2, 0, 0)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(3);
+
+            result.Length.Should().Be(3);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 2, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 2, 0, 0));
+
+            result[0].Description.Should().Be(@"Occurs every day at 02:00:00");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Daily_Once_Correct_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Daily,
+                DailyType = ConfigurationTypes.Once,
+                DailyOnceTime = new TimeSpan(2, 0, 0)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(3);
+
+            result.Length.Should().Be(3);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 2, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 2, 0, 0));
+
+            result[0].Description.Should().Be(@"Se produce todos los días a las 02:00:00");
         }
 
         [Fact]
@@ -609,6 +984,7 @@ namespace Semicrol.Schedule.Test
             Configuration configuration = new()
             {
                 Enabled = true,
+                Culture = SupportedCultures.en_GB,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Type = ConfigurationTypes.Recurring,
                 Periodcity = PeriodicityTypes.Daily,
@@ -627,7 +1003,36 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 0, 0, 0));
             result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 12, 0, 0));
 
-            result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:58");
+            result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:59");
+        }
+
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Daily_Correct_eu()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Daily,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 12,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(6);
+
+            result.Length.Should().Be(6);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 1, 12, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 2, 12, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 3, 12, 0, 0));
+
+            result[0].Description.Should().Be(@"Se produce todos los días cada 12 horas entre 00:00:00 y 23:59:59");
         }
 
         [Fact]
@@ -656,7 +1061,65 @@ namespace Semicrol.Schedule.Test
             result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 3, 1, 12, 0, 0));
 
 
-            result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:58 starting on 28/02/2020");
+            result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:59 starting on 28/02/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Daily_Leap_Year_us()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.en_US,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Daily,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 12,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                StartDate = new DateTime(2020, 2, 28)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(6);
+
+            result.Length.Should().Be(6);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 28, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 28, 12, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 29, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 29, 12, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 3, 1, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 3, 1, 12, 0, 0));
+
+            result[0].Description.Should().Be(@"Occurs every day every 12 Hours between 00:00:00 and 23:59:59 starting on 2/28/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Daily_Leap_Year_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Daily,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 12,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                StartDate = new DateTime(2020, 2, 28)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(6);
+
+            result.Length.Should().Be(6);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 28, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 28, 12, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 29, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 2, 29, 12, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 3, 1, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 3, 1, 12, 0, 0));
+
+            result[0].Description.Should().Be(@"Se produce todos los días cada 12 horas entre 00:00:00 y 23:59:59 empezando el 28/02/2020");
         }
 
         #endregion
@@ -746,7 +1209,7 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 10, 0, 0, 0));
             result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 10, 12, 0, 0));
 
-            result[0].Description.Should().Be(@"Occurs every 1 week on Monday and Friday every 12 Hours between 00:00:00 and 23:59:58");
+            result[0].Description.Should().Be(@"Occurs every 1 week on Monday and Friday every 12 Hours between 00:00:00 and 23:59:59");
         }
 
         [Fact]
@@ -779,7 +1242,7 @@ namespace Semicrol.Schedule.Test
             result[8].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 0, 0, 0));
             result[9].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 12, 0, 0));
 
-            result[0].Description.Should().Be(@"Occurs every 2 weeks on Tuesday, Friday and Sunday every 12 Hours between 00:00:00 and 23:59:58");
+            result[0].Description.Should().Be(@"Occurs every 2 weeks on Tuesday, Friday and Sunday every 12 Hours between 00:00:00 and 23:59:59");
         }
 
         [Fact]
@@ -821,6 +1284,7 @@ namespace Semicrol.Schedule.Test
             Configuration configuration = new()
             {
                 Enabled = true,
+                Culture = SupportedCultures.en_GB,
                 CurrentDate = new DateTime(2020, 12, 15),
                 Type = ConfigurationTypes.Recurring,
                 Periodcity = PeriodicityTypes.Weekly,
@@ -848,6 +1312,75 @@ namespace Semicrol.Schedule.Test
             result[0].Description.Should().Be(@"Occurs every 3 weeks on Monday, Wednesday and Friday at 02:30:00 starting on 01/01/2021 and ending on 31/01/2021");
         }
 
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Weekly_Correct5_us()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.en_US,
+                CurrentDate = new DateTime(2020, 12, 15),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Weekly,
+                WeeklyPeriodicity = 3,
+                WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday },
+                DailyType = ConfigurationTypes.Once,
+                DailyOnceTime = new TimeSpan(2, 30, 0),
+                StartDate = new DateTime(2021, 1, 1),
+                EndDate = new DateTime(2021, 1, 31)
+
+            };
+            Schedule Schedule = new(configuration);
+
+            Action GetNextExecution = () => Schedule.CalculateSerie(5);
+            GetNextExecution.Should().Throw<Exception>().WithMessage("The date is out of the limits");
+
+            var result = Schedule.CalculateSerie(4);
+
+            result.Length.Should().Be(4);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 1, 2, 30, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 18, 2, 30, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 20, 2, 30, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 22, 2, 30, 0));
+
+            result[0].Description.Should().Be(@"Occurs every 3 weeks on Monday, Wednesday and Friday at 02:30:00 starting on 1/1/2021 and ending on 1/31/2021");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Weekly_Correct5_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                CurrentDate = new DateTime(2020, 12, 15),
+                Type = ConfigurationTypes.Recurring,
+                Periodcity = PeriodicityTypes.Weekly,
+                WeeklyPeriodicity = 3,
+                WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday },
+                DailyType = ConfigurationTypes.Once,
+                DailyOnceTime = new TimeSpan(2, 30, 0),
+                StartDate = new DateTime(2021, 1, 1),
+                EndDate = new DateTime(2021, 1, 31)
+
+            };
+            Schedule Schedule = new(configuration);
+
+            Action GetNextExecution = () => Schedule.CalculateSerie(5);
+            GetNextExecution.Should().Throw<Exception>().WithMessage("La fecha está fuera de los límites");
+
+            var result = Schedule.CalculateSerie(4);
+
+            result.Length.Should().Be(4);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 1, 2, 30, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 18, 2, 30, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 20, 2, 30, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 1, 22, 2, 30, 0));
+
+            result[0].Description.Should().Be(@"Se produce cada 3 semanas los lunes, miércoles y viernes a las 02:30:00 empezando el 01/01/2021 y terminando el 31/01/2021");
+        }
+
         [Fact]
         public void Calculate_Next_Execution_Recurring_Weekly_Correct6()
         {
@@ -858,7 +1391,7 @@ namespace Semicrol.Schedule.Test
                 Type = ConfigurationTypes.Recurring,
                 Periodcity = PeriodicityTypes.Weekly,
                 WeeklyPeriodicity = 1,
-                WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, 
+                WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
                     DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday },
                 DailyType = ConfigurationTypes.Once,
                 DailyOnceTime = new TimeSpan(0, 0, 0),
@@ -987,6 +1520,7 @@ namespace Semicrol.Schedule.Test
             Configuration configuration = new()
             {
                 Enabled = true,
+                Culture = SupportedCultures.en_GB,
                 Type = ConfigurationTypes.Recurring,
                 CurrentDate = new DateTime(2020, 1, 1),
                 Periodcity = PeriodicityTypes.Weekly,
@@ -1014,6 +1548,73 @@ namespace Semicrol.Schedule.Test
             result[0].Description.Should().Be(@"Occurs every 2 weeks on Monday and Sunday every 2 Seconds between 04:30:10 and 04:30:15 starting on 02/01/2020");
         }
 
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Weekly_Seconds_us()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.en_US,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Periodcity = PeriodicityTypes.Weekly,
+                WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Sunday },
+                WeeklyPeriodicity = 2,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Seconds,
+                DailyStartTime = new TimeSpan(4, 30, 10),
+                DailyEndTime = new TimeSpan(4, 30, 15),
+                StartDate = new DateTime(2020, 1, 2)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 10));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 12));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 14));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 10));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 12));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 14));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 4, 30, 10));
+
+            result[0].Description.Should().Be(@"Occurs every 2 weeks on Monday and Sunday every 2 Seconds between 04:30:10 and 04:30:15 starting on 1/2/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Weekly_Seconds_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 1, 1),
+                Periodcity = PeriodicityTypes.Weekly,
+                WeeklyActiveDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Sunday },
+                WeeklyPeriodicity = 2,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Seconds,
+                DailyStartTime = new TimeSpan(4, 30, 10),
+                DailyEndTime = new TimeSpan(4, 30, 15),
+                StartDate = new DateTime(2020, 1, 2)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 10));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 12));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 5, 4, 30, 14));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 10));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 12));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 13, 4, 30, 14));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 1, 19, 4, 30, 10));
+
+            result[0].Description.Should().Be(@"Se produce cada 2 semanas los lunes y domingo cada 2 segundos entre 04:30:10 y 04:30:15 empezando el 02/01/2020");
+        }
         #endregion
 
         #region Schedule Type Occurs Monthly
@@ -1085,6 +1686,74 @@ namespace Semicrol.Schedule.Test
             result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 4, 0, 0));
             result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 15, 2, 0, 0));
             result[0].Description.Should().Be("Occurs the days 15 every 2 months every 2 Hours between 02:00:00 and 04:00:00 starting on 02/10/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_DayType_us()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.en_US,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 10, 1),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 15,
+                MonthlyPeriodicity = 2,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                DailyStartTime = new TimeSpan(2, 0, 0),
+                DailyEndTime = new TimeSpan(4, 0, 0),
+                StartDate = new DateTime(2020, 10, 2)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 15, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 15, 4, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 15, 2, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 15, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 2, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 4, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 15, 2, 0, 0));
+            result[0].Description.Should().Be("Occurs the days 15 every 2 months every 2 Hours between 02:00:00 and 04:00:00 starting on 10/2/2020");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_DayType_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2020, 10, 1),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Day,
+                MonthlyDay = 15,
+                MonthlyPeriodicity = 2,
+                DailyType = ConfigurationTypes.Recurring,
+                DailyPeriodicity = 2,
+                DailyPeriodicityType = TimePeriodicityTypes.Hours,
+                DailyStartTime = new TimeSpan(2, 0, 0),
+                DailyEndTime = new TimeSpan(4, 0, 0),
+                StartDate = new DateTime(2020, 10, 2)
+            };
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(7);
+
+            result.Length.Should().Be(7);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 15, 2, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 10, 15, 4, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 15, 2, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2020, 12, 15, 4, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 2, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 15, 4, 0, 0));
+            result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 15, 2, 0, 0));
+            result[0].Description.Should().Be("Se produce los días 15 cada 2 meses cada 2 horas entre 02:00:00 y 04:00:00 empezando el 02/10/2020");
         }
 
         [Fact]
@@ -1281,6 +1950,7 @@ namespace Semicrol.Schedule.Test
             result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 3, 2, 0, 0));
             result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 2, 3, 4, 0, 0));
             result[6].NextExecutionDate.Should().BeSameDateAs(new DateTime(2021, 4, 7, 2, 0, 0));
+            
             result[0].Description.Should().Be("Occurs the First Wednesday of every 2 months every 2 Hours between 02:00:00 and 04:00:00 starting on 10/09/2020");
         }
 
@@ -1561,6 +2231,39 @@ namespace Semicrol.Schedule.Test
             result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2024, 7, 28, 0, 0, 0));
 
             result[0].Description.Should().Be("Occurs the Last Sunday of every 6 months at 00:00:00 starting on 01/01/2022");
+        }
+
+        [Fact]
+        public void Calculate_Next_Execution_Recurring_Monthly_BuiltType10_es()
+        {
+            Configuration configuration = new()
+            {
+                Enabled = true,
+                Culture = SupportedCultures.es_ES,
+                Type = ConfigurationTypes.Recurring,
+                CurrentDate = new DateTime(2021, 12, 1),
+                Periodcity = PeriodicityTypes.Monthly,
+                MonthlyType = MonthlyTypes.Built,
+                MonthlyOrdinalPeriodicity = OrdinalPeriodicityTypes.Last,
+                MonthlyWeekDay = AvailableWeekDays.Sunday,
+                MonthlyPeriodicity = 6,
+                DailyType = ConfigurationTypes.Once,
+                DailyOnceTime = new TimeSpan(0, 0, 0),
+                StartDate = new DateTime(2022, 1, 1)
+            };
+
+            Schedule Schedule = new(configuration);
+            var result = Schedule.CalculateSerie(6);
+
+            result.Length.Should().Be(6);
+            result[0].NextExecutionDate.Should().BeSameDateAs(new DateTime(2022, 1, 30, 0, 0, 0));
+            result[1].NextExecutionDate.Should().BeSameDateAs(new DateTime(2022, 7, 31, 0, 0, 0));
+            result[2].NextExecutionDate.Should().BeSameDateAs(new DateTime(2023, 1, 29, 0, 0, 0));
+            result[3].NextExecutionDate.Should().BeSameDateAs(new DateTime(2023, 7, 30, 0, 0, 0));
+            result[4].NextExecutionDate.Should().BeSameDateAs(new DateTime(2024, 1, 28, 0, 0, 0));
+            result[5].NextExecutionDate.Should().BeSameDateAs(new DateTime(2024, 7, 28, 0, 0, 0));
+
+            result[0].Description.Should().Be("Se produce el último domingo de cada 6 meses a las 00:00:00 empezando el 01/01/2022");
         }
 
         [Fact]

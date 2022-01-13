@@ -51,11 +51,11 @@
             WeekendDay
         }
 
-        public enum SupportingLanguages
+        public enum SupportedCultures
         {
-            es_ES,
+            en_GB,
             en_US,
-            en_GB
+            es_ES
         }
     }
 }

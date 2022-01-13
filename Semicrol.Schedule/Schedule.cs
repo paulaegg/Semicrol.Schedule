@@ -11,36 +11,38 @@ namespace Semicrol.Schedule
     {
         private readonly Configuration _configuration;
         private Validator _validator;
-        private TranslationsManager _translationManager;
+        private ResourceManager _resourceManager;
 
         public Schedule(Configuration configuration)
         {
-            _configuration = configuration ?? throw new Exception("You should define a configuration for the schedule");
+            _configuration = configuration ?? throw new Exception(GetResourceManager().GetResource("configurationUndefined"));
         }
 
         private Validator GetValidator()
         {
             if (_validator == null)
             {
-                _validator = new Validator(_configuration, GetTranslationManager());
+                _validator = new Validator(_configuration, GetResourceManager());
             }
             return _validator;
         }
 
-        private TranslationsManager GetTranslationManager()
+        private ResourceManager GetResourceManager()
         {
-            if (_translationManager == null)
+            if (_resourceManager == null)
             {
-                _translationManager = new TranslationsManager(_configuration.language);
+                _resourceManager = _configuration == null
+                    ? new ResourceManager(SupportedCultures.en_GB)
+                    : new ResourceManager(_configuration.Culture);
             }
-            return _translationManager;
+            return _resourceManager;
         }
 
         public OutPut GetNextExecution(DateTime lastOutputDate)
         {
             if (!_configuration.Enabled)
             {
-                return new OutPut() { Description = GetTranslationManager().GetText("disabled") };
+                return new OutPut() { Description = GetResourceManager().GetResource("disabled") };
             }
 
             GetValidator().ValidateConfiguration();
@@ -359,7 +361,7 @@ namespace Semicrol.Schedule
 
         public string GetDescription(DateTime nextDate)
         {
-            return Description.GetDescription(_configuration, nextDate);
+            return Description.GetDescription(_configuration, _resourceManager, nextDate);
         }
     }
-}
+ }
