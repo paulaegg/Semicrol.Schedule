@@ -26,6 +26,7 @@ namespace Semicrol.Schedule
             {                
                 _resources.Add("disabled", "El proceso está desactivado");
                 _resources.Add("configurationUndefined", "Debe definir una configuración para el horario");
+
                 #region ValidatorClass
                 _resources.Add("currentCorrect", "La fecha actual debe ser una fecha correcta");
                 _resources.Add("startCorrect", "La fecha de inicio debe ser una fecha correcta");

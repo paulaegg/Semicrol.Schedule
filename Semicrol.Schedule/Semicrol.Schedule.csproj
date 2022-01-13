@@ -49,7 +49,6 @@
     <Compile Include="ResourceManager.cs" />
     <Compile Include="Schedule.cs" />
     <Compile Include="ScheduleExtensionMethods.cs" />
-    <Compile Include="TranslationsManager.cs" />
     <Compile Include="Validator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
